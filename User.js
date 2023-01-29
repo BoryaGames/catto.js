@@ -31,9 +31,9 @@ module.exports = class {
   get avatar() {
     var avataru = this.avatarHash;
     if (avataru.startsWith("a_")) {
-      avataru = `https://cdn.discordapp.com/avatars/${avataru}.gif?size=4096`;
+      avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.gif?size=4096`;
     } else if (avataru) {
-      avataru = `https://cdn.discordapp.com/avatars/${avataru}.webp?size=4096`;
+      avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.webp?size=4096`;
     } else {
       avataru = `https://cdn.discordapp.com/embed/avatars/${(parseInt(this.discrim) % 5).toString()}.png`;
     }
@@ -91,9 +91,9 @@ module.exports = class {
   get banner() {
     var banneru = this.bannerHash;
     if (banneru.startsWith("a_")) {
-      banneru = `https://cdn.discordapp.com/avatars/${banneru}.gif?size=4096`;
+      banneru = `https://cdn.discordapp.com/banners/${this.id}/${banneru}.gif?size=4096`;
     } else if (banneru) {
-      banneru = `https://cdn.discordapp.com/avatars/${banneru}.webp?size=4096`;
+      banneru = `https://cdn.discordapp.com/banners/${this.id}/${banneru}.webp?size=4096`;
     } else {
       banneru = this.bannerColor || this.accentColor;
     }
