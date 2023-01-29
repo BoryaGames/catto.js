@@ -1,5 +1,5 @@
 var request = require("./request");
-var base64 = require("./base64");
+var Base64 = require("./Base64");
 module.exports = class {
   constructor(options) {
     this.options = Object.assign({
@@ -10,7 +10,7 @@ module.exports = class {
     }, options || {});
   }
   async read(file) {
-    var value = base64.base64.decode((await request.get({
+    var value = Base64.decode((await request.get({
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
       "headers": {
         "User-Agent": this.options.username,
@@ -34,7 +34,7 @@ module.exports = class {
       },
       "json": !0,
       "body": {
-        "content": base64.base64.encode(value),
+        "content": Base64.encode(value),
         "message": this.options.message
       }
     });

@@ -20,8 +20,8 @@ test("array remove", () => {
   expect(arr).toMatchObject(["a", "c"]);
 });
 test("base64 encode", () => {
-  expect(cattojs.base64.encode("Test.")).toBe("VGVzdC4=");
+  expect(cattojs.Base64.encode("Test.")).toBe("VGVzdC4=");
 });
 test("base64 decode", () => {
-  expect(cattojs.base64.decode("VGVzdC4=")).toBe("Test.");
+  expect(cattojs.Base64.decode("VGVzdC4=")).toBe("Test.");
 });
