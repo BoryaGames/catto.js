@@ -1,5 +1,3 @@
-/** @module Server */
-
 var events = require("events");
 var express = require("express");
 var expressWs = require("express-ws");
@@ -15,12 +13,6 @@ var FileStore = require("session-file-store")(session);
 if (typeof EventEmitter !== "undefined") {} else {
   var { EventEmitter } = events;
 }
-
-/**
- * Server.
- * @class
- * @param {object} options
- */
 class Server extends EventEmitter {
   constructor(options) {
     super();
@@ -137,8 +129,12 @@ class Server extends EventEmitter {
     this.app.ws(...args);
     return this;
   }
-  static(folder) {
-    this.app.use(express.static(path.join(__dirname,"..","..",folder)));
+  static(folder, path) {
+    if (path) {
+      this.app.use(path, express.static(path.join(__dirname,"..","..",folder)));
+    } else {
+      this.app.use(express.static(path.join(__dirname,"..","..",folder)));
+    }
     return this;
   }
   static fa(text) {
