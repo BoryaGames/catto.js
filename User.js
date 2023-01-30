@@ -47,7 +47,7 @@ module.exports = class {
   }
   get badges() {
     var i = 23;
-    var p = this.options.badges;
+    var p = this.options.flags || this.options.public_flags;
     var f = [];
     while (--i > -1) {
       if (![21, 20, 15, 13, 12, 11, 5, 4].includes(i) && p >= (1 << i)) {
