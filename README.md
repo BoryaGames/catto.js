@@ -13,8 +13,7 @@
 - Authorizing users using Discord API OAuth2.
 - Generating random numbers and booleans.
 - Easy removing elements from Arrays.
-And of course Dillinger itself is open source with a [public repository][dill]
- on GitHub.
+
 ## Installation
 ```sh
 npm i catto.js
