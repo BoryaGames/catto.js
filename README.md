@@ -3,6 +3,7 @@
 ![Build](https://github.com/BoryaGames/catto.js/actions/workflows/npm-publish.yml/badge.svg)
 ![Contributors](https://img.shields.io/github/contributors/BoryaGames/catto.js)
 ![Chat on Discord](https://img.shields.io/discord/916772281747931198?logo=discord)
+
 ✨ catto.js is a new version of universal catto package, which allows easy web server making, random generation and Discord authorization. ✨
 ## Features
 - Creating web server.
