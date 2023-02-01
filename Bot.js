@@ -5,15 +5,19 @@ if (typeof EventEmitter !== "undefined") {} else {
   var { EventEmitter } = events;
 }
 module.exports = class extends EventEmitter {
-  constructor(options) {
+  constructor(options, client) {
     super();
     this.options = Object.assign({
       "token": "",
       "intents": 98045
     }, options || {});
-    this.client = new Discord.Client({
-      "intents": new Discord.IntentsBitField(this.options.intents)
-    });
+    if (client) {
+      this.client = client;
+    } else {
+      this.client = new Discord.Client({
+        "intents": new Discord.IntentsBitField(this.options.intents)
+      });
+    }
     this.commands = new Map();
     this.client.on("ready", () => {
       var cmds = [];
