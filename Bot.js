@@ -137,8 +137,8 @@ module.exports = class extends EventEmitter {
     this.client.on("guildCreate", guild => {
       this.emit("botAdd", guild);
     });
-    this.client.on("guildRemove", guild => {
-      this.emit("botRemove", guild);
+    this.client.on("guildDelete", guild => {
+      this.emit("botDelete", guild);
     });
   }
   slashCommand(basic, options, executor) {
