@@ -109,6 +109,10 @@ module.exports = class extends EventEmitter {
     });
     this.client.on("interactionCreate", interaction => {
       if (interaction.isChatInputCommand()) {
+        interaction.user = new User(interaction.user);
+        if (interaction.member) {
+          interaction.member.user = new User(interaction.member.user);
+        }
         var command = this.commands.get(interaction.commandName);
         if (command) {
           try {
