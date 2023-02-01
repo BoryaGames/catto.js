@@ -1,4 +1,4 @@
-var request = require("./request");
+var request = require("./request");//я люблю кота
 var User = require("./User");
 module.exports = class {
   constructor(options) {
