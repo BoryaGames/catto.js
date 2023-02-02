@@ -1,3 +1,4 @@
+var Application = require("./Application");
 module.exports = class {
   constructor(options) {
     this.options = Object.assign({
