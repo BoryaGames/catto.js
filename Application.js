@@ -54,9 +54,59 @@ module.exports = class {
     return this.options.verify_key;
   }
   get badges() {
-    // TODO
+    var i = 24;
+    var p = this.options.flags;
+    var f = [];
+    while (--i > -1) {
+      if (![22, 21, 20, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0].includes(i) && p >= (1 << i)) {
+        p -= (1 << i);
+        f.push(i);
+      }
+    }
+    var fl = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "GATEWAY_PRESENCE",
+      "GATEWAY_PRESENCE_LIMITED",
+      "GATEWAY_GUILD_MEMBERS",
+      "GATEWAY_GUILD_MEMBERS_LIMITED",
+      "VERIFICATION_PENDING_GUILD_LIMIT",
+      "EMBEDDED",
+      "GATEWAY_MESSAGE_CONTENT",
+      "GATEWAY_MESSAGE_CONTENT_LIMITED",
+      null,
+      null,
+      null,
+      "APPLICATION_COMMAND_BADGE"
+    ];
+    return f.map(n => fl[n]);
   }
   get tags() {
     return this.options.tags;
+  }
+  get intents() {
+    return this.badges.filter(badge => ![null, "VERIFICATION_PENDING_GUILD_LIMIT", "EMBEDDED", "APPLICATION_COMMAND_BADGE"].includes(badge));
+  }
+  get cannotVerify() {
+    return this.badges.has("VERIFICATION_PENDING_GUILD_LIMIT");
+  }
+  get canVerify() {
+    return !this.cannotVerify;
+  }
+  get isEmbedded() {
+    return this.badges.has("EMBEDDED");
+  }
+  get supportsSlash() {
+    return this.badges.has("APPLICATION_COMMAND_BADGE");
   }
 };
