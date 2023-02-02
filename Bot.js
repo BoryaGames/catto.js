@@ -23,6 +23,7 @@ module.exports = class extends EventEmitter {
         }
       });
     }
+    this.slashCommands = new Map();
     this.commands = new Map();
     this.client.on("ready", () => {
       var cmds = [];
