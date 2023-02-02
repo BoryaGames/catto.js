@@ -1,3 +1,4 @@
+var request = require("./request");
 var Application = require("./Application");
 module.exports = class {
   constructor(options) {
@@ -22,7 +23,7 @@ module.exports = class {
     }, options || {});
     if (this.isBot) {
       request.get(`https://discord.com/api/v${this.options.client.rest.version}/oauth2/applications/${this.id}/rpc`).then(application => {
-        this.application = new Application(application);
+        this.application = new Application(application.body);
       });
     }
   }
