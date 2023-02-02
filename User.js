@@ -22,7 +22,7 @@ module.exports = class {
       "system": !1
     }, options || {});
     if (this.isBot) {
-      request.get(`https://discord.com/api/v${this.options.client.rest.version}/oauth2/applications/${this.id}/rpc`).then(application => {
+      request.get(`https://discord.com/api/v${(this.options.client ? this.options.client.rest.version.toString() : "10")}/oauth2/applications/${this.id}/rpc`).then(application => {
         this.application = new Application(application.body);
       });
     }
