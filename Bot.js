@@ -9,13 +9,17 @@ module.exports = class extends EventEmitter {
     super();
     this.options = Object.assign({
       "token": "",
-      "intents": 98045
+      "intents": 98045,
+      "apiv": 10
     }, options || {});
     if (client) {
       this.client = client;
     } else {
       this.client = new Discord.Client({
-        "intents": new Discord.IntentsBitField(this.options.intents)
+        "intents": new Discord.IntentsBitField(this.options.intents),
+        "rest": {
+          "version": this.options.apiv
+        }
       });
     }
     this.commands = new Map();
