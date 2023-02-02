@@ -186,6 +186,11 @@ module.exports = class extends EventEmitter {
     return this;
   }
   command(basic, executor) {
+    if (typeof basic === "string") {
+      basic = {
+        "name": basic
+      };
+    }
     this.commands.set(basic.name, Object.assign(basic, {
       "execute": executor
     }));
