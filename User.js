@@ -1,9 +1,8 @@
 var request = require("./request");
 var Application = require("./Application");
 module.exports = class {
-  constructor(options) {
+  constructor(options, bot) {
     this.options = Object.assign({
-      "client": null,
       "id": "",
       "username": "",
       "avatar": "",
@@ -21,8 +20,14 @@ module.exports = class {
       "bot": !1,
       "system": !1
     }, options || {});
+    this.bot = bot;
     if (this.isBot) {
-      request.get(`https://discord.com/api/v${(this.options.client ? this.options.client.rest.version.toString() : "10")}/oauth2/applications/${this.id}/rpc`).then(application => {
+      request.get({
+        "url": `https://discord.com/api/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`,
+        "headers": {
+          "Authorization": `Bot ${this.bot.client.token}`
+        }
+      }).then(application => {
         this.application = new Application(application.body);
       });
     }
@@ -38,7 +43,7 @@ module.exports = class {
   }
   get avatar() {
     var avataru = this.avatarHash;
-    if (avataru.startsWith("a_")) {
+    if (avataru && avataru.startsWith("a_")) {
       avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.gif?size=4096`;
     } else if (avataru) {
       avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.webp?size=4096`;
@@ -98,7 +103,7 @@ module.exports = class {
   }
   get banner() {
     var banneru = this.bannerHash;
-    if (banneru.startsWith("a_")) {
+    if (banneru && banneru.startsWith("a_")) {
       banneru = `https://cdn.discordapp.com/banners/${this.id}/${banneru}.gif?size=4096`;
     } else if (banneru) {
       banneru = `https://cdn.discordapp.com/banners/${this.id}/${banneru}.webp?size=4096`;

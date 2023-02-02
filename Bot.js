@@ -121,9 +121,9 @@ module.exports = class extends EventEmitter {
     });
     this.client.on("interactionCreate", interaction => {
       if (interaction.isChatInputCommand()) {
-        interaction.user = new User(interaction.user);
+        interaction.user = new User(interaction.user, this);
         if (interaction.member) {
-          interaction.member.user = new User(interaction.member.user);
+          interaction.member.user = new User(interaction.member.user, this);
         }
         var command = this.slashCommands.get(interaction.commandName);
         if (command) {
@@ -141,9 +141,9 @@ module.exports = class extends EventEmitter {
       }
     });
     this.client.on("messageCreate", message => {
-      message.author = new User(message.author);
+      message.author = new User(message.author, this);
       if (message.member) {
-        message.member.user = new User(message.member.user);
+        message.member.user = new User(message.member.user, this);
       }
       var args = message.content.split(" ");
       var cmd = args.shift();
