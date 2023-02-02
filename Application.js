@@ -58,7 +58,7 @@ module.exports = class {
     var p = this.options.flags;
     var f = [];
     while (--i > -1) {
-      if (![22, 21, 20, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0].includes(i) && p >= (1 << i)) {
+      if (p >= (1 << i)) {
         p -= (1 << i);
         f.push(i);
       }
@@ -89,7 +89,7 @@ module.exports = class {
       null,
       "APPLICATION_COMMAND_BADGE"
     ];
-    return f.map(n => fl[n]);
+    return f.map(n => fl[n]).filter(n => n);
   }
   get tags() {
     return this.options.tags;
