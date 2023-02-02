@@ -9,19 +9,24 @@ module.exports = class extends EventEmitter {
     super();
     this.options = Object.assign({
       "token": "",
-      "intents": 98045
+      "intents": 98045,
+      "apiv": 10,
+      "slashListener": !0
     }, options || {});
     if (client) {
       this.client = client;
     } else {
       this.client = new Discord.Client({
-        "intents": new Discord.IntentsBitField(this.options.intents)
+        "intents": new Discord.IntentsBitField(this.options.intents),
+        "rest": {
+          "version": this.options.apiv
+        }
       });
     }
     this.commands = new Map();
     this.client.on("ready", () => {
       var cmds = [];
-      for (var cmd of this.commands.values()) {
+      for (var cmd of this.slashCommands.values()) {
         var cmdo = new Discord.SlashCommandBuilder();
         cmdo.setName(cmd.name).setDescription(cmd.description).setDMPermission(cmd.dm);
         for (var opt of cmd.options) {
@@ -108,7 +113,9 @@ module.exports = class extends EventEmitter {
         }
         cmds.push(cmdo);
       }
-      this.client.application.commands.set(cmds);
+      if (this.options.slashListener) {
+        this.client.application.commands.set(cmds);
+      }
       this.emit("running");
     });
     this.client.on("interactionCreate", interaction => {
@@ -117,12 +124,13 @@ module.exports = class extends EventEmitter {
         if (interaction.member) {
           interaction.member.user = new User(interaction.member.user);
         }
-        var command = this.commands.get(interaction.commandName);
+        var command = this.slashCommands.get(interaction.commandName);
         if (command) {
           try {
             command.execute({
               Discord,
               interaction,
+              "cmd": command.name,
               "bot": this
             });
           } catch(e) {
@@ -135,6 +143,22 @@ module.exports = class extends EventEmitter {
       message.author = new User(message.author);
       if (message.member) {
         message.member.user = new User(message.member.user);
+      }
+      var args = message.content.split(" ");
+      var cmd = args.shift();
+      var command = this.commands.get(cmd);
+      if (command) {
+        try {
+          command.execute({
+            Discord,
+            message,
+            cmd,
+            args,
+            "bot": this
+          });
+        } catch(e) {
+          console.error(e);
+        }
       }
       this.emit("message", message);
     });
@@ -154,8 +178,14 @@ module.exports = class extends EventEmitter {
       options = [];
     }
     basic.name = basic.name.substring(1);
-    this.commands.set(basic.name, Object.assign(basic, {
+    this.slashCommands.set(basic.name, Object.assign(basic, {
       "options": options,
+      "execute": executor
+    }));
+    return this;
+  }
+  command(basic, executor) {
+    this.commands.set(basic.name, Object.assign(basic, {
       "execute": executor
     }));
     return this;

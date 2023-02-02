@@ -1,6 +1,8 @@
+var Application = require("./Application");
 module.exports = class {
   constructor(options) {
     this.options = Object.assign({
+      "client": null,
       "id": "",
       "username": "",
       "avatar": "",
@@ -18,6 +20,11 @@ module.exports = class {
       "bot": !1,
       "system": !1
     }, options || {});
+    if (this.isBot) {
+      request.get(`https://discord.com/api/v${this.options.client.rest.version}/oauth2/applications/${this.id}/rpc`).then(application => {
+        this.application = new Application(application);
+      });
+    }
   }
   get id() {
     return this.options.id;
