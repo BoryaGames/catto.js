@@ -19,6 +19,10 @@ test("array remove", () => {
   expect(arr.remove(1)).toBe("b");
   expect(arr).toMatchObject(["a", "c"]);
 });
+test("array has", () => {
+  var arr = ["a", "b", "c"];
+  expect(arr.has("b")).toBeTruthy();
+});
 test("base64 encode", () => {
   expect(cattojs.Base64.encode("Test.")).toBe("VGVzdC4=");
 });
