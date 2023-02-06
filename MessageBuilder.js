@@ -18,27 +18,27 @@ module.exports = class MessageBuilder {
     if (basic.emoji) {
       btn.setEmoji(basic.emoji);
     }
-    if (basic.label) {
-      btn.setLabel(basic.label);
+    if (basic.text) {
+      btn.setLabel(basic.text);
     }
-    if (!basic.emoji && !basic.label) {
+    if (!basic.emoji && !basic.text) {
       throw new Error("Can't have an empty button.");
     }
-    var stylelib = {
+    var colorlib = {
       "blue": "Primary",
       "gray": "Secondary",
       "lime": "Success",
       "red": "Danger"
     };
-    basic.style = basic.style.toLowerCase();
-    if (!stylelib.includes(basic.style) && !basic.url) {
-      throw new Error("Unknown style.");
+    basic.color = basic.color.toLowerCase();
+    if (!colorlib.includes(basic.color) && !basic.url) {
+      throw new Error("Unknown color.");
     }
     if (basic.url) {
       btn.setStyle(Discord.ButtonStyle.Link);
       btn.setURL(basic.url);
     } else {
-      btn.setStyle(Discord.ButtonStyle[stylelib[basic.style]]);
+      btn.setStyle(Discord.ButtonStyle[colorlib[basic.color]]);
     }
     if (!this.data.components) {
       this.data.components = [];
