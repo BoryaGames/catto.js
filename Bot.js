@@ -1,6 +1,7 @@
 var events = require("events");
 var Discord = require("discord.js");
 var User = require("./User");
+var MessageBuilder = require("./MessageBuilder");
 if (typeof EventEmitter !== "undefined") {} else {
   var { EventEmitter } = events;
 }
@@ -23,8 +24,9 @@ module.exports = class extends EventEmitter {
         }
       });
     }
-    this.slashCommands = new Map();
+    this.buttons = new Map();
     this.commands = new Map();
+    this.slashCommands = new Map();
     this.client.on("ready", () => {
       var cmds = [];
       for (var cmd of this.slashCommands.values()) {
@@ -130,8 +132,30 @@ module.exports = class extends EventEmitter {
           try {
             command.execute({
               Discord,
+              User,
+              MessageBuilder,
               interaction,
               "cmd": command.name,
+              "bot": this
+            });
+          } catch(e) {
+            console.error(e);
+          }
+        }
+      }
+      if (interaction.isButton()) {
+        interaction.user = new User(interaction.user, this);
+        if (interaction.member) {
+          interaction.member.user = new User(interaction.member.user, this);
+        }
+        var button = this.buttons.get(interaction.customId);
+        if (button) {
+          try {
+            button.execute({
+              Discord,
+              User,
+              MessageBuilder,
+              interaction,
               "bot": this
             });
           } catch(e) {
@@ -152,6 +176,8 @@ module.exports = class extends EventEmitter {
         try {
           command.execute({
             Discord,
+            User,
+            MessageBuilder,
             message,
             cmd,
             args,
