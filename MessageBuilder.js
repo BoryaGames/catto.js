@@ -35,7 +35,7 @@ module.exports = class MessageBuilder {
       "red": "Danger"
     };
     basic.color = basic.color.toLowerCase();
-    if (!colorlib.includes(basic.color) && !basic.url) {
+    if (!colorlib[basic.color] && !basic.url) {
       throw new Error("Unknown color.");
     }
     if (basic.url) {
