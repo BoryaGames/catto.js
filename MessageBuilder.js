@@ -83,11 +83,11 @@ module.exports = class MessageBuilder {
         }
       }
     }
-    if (!bot.url) {
-      if (bot.buttons.get(basic.id)) {
+    if (!basic.url) {
+      if (this.bot.buttons.get(basic.id)) {
         throw new Error("ID must be unique.");
       }
-      bot.buttons.set(basic.id, execute);
+      this.bot.buttons.set(basic.id, execute);
     }
     return this;
   }
