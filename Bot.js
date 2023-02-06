@@ -151,7 +151,7 @@ module.exports = class extends EventEmitter {
         var button = this.buttons.get(interaction.customId);
         if (button) {
           try {
-            button.execute({
+            button({
               Discord,
               User,
               MessageBuilder,
