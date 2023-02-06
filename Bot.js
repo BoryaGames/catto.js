@@ -143,6 +143,26 @@ module.exports = class extends EventEmitter {
           }
         }
       }
+      if (interaction.isButton()) {
+        interaction.user = new User(interaction.user, this);
+        if (interaction.member) {
+          interaction.member.user = new User(interaction.member.user, this);
+        }
+        var button = this.buttons.get(interaction.customId);
+        if (button) {
+          try {
+            button.execute({
+              Discord,
+              User,
+              MessageBuilder,
+              interaction,
+              "bot": this
+            });
+          } catch(e) {
+            console.error(e);
+          }
+        }
+      }
     });
     this.client.on("messageCreate", message => {
       message.author = new User(message.author, this);
