@@ -101,4 +101,23 @@ module.exports = class MessageBuilder {
     }
     return this;
   }
+  ephemeral() {
+    this.data.ephemeral = !0;
+    return this;
+  }
+  notEphemeral() {
+    this.data.ephemeral = !1;
+    return this;
+  }
+  embed(d) {
+    if (!this.data.embeds) {
+      this.data.embeds = [];
+    }
+    if (this.data.embeds.length < 10) {
+      this.data.embeds.push(d);
+      return this;
+    } else {
+      throw new Error("Message can't have more than 10 embeds.");
+    }
+  }
 };
