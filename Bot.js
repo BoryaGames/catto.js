@@ -1,7 +1,7 @@
 var events = require("events");
 var Discord = require("discord.js");
 var User = require("./User");
-var MessageBuilder = require("MessageBuilder");
+var MessageBuilder = require("./MessageBuilder");
 if (typeof EventEmitter !== "undefined") {} else {
   var { EventEmitter } = events;
 }
