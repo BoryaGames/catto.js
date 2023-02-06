@@ -5,7 +5,11 @@ module.exports = class MessageBuilder {
     this.data = {};
   }
   text(t) {
-    this.data.content = t;
+    this.data.content += t;
+    return this;
+  }
+  link(text, link) {
+    this.data.content += `[${text}](${link})`;
     return this;
   }
   button(basic, execute) {
