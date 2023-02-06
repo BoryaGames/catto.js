@@ -5,10 +5,16 @@ module.exports = class MessageBuilder {
     this.data = {};
   }
   text(t) {
+    if (!this.data.content) {
+      this.data.content = "";
+    }
     this.data.content += t;
     return this;
   }
   link(text, link) {
+    if (!this.data.content) {
+      this.data.content = "";
+    }
     this.data.content += `[${text}](${link})`;
     return this;
   }
@@ -18,7 +24,11 @@ module.exports = class MessageBuilder {
       throw new Error("All buttons except URL must have ID.");
     }
     btn.setCustomId(basic.id);
-    btn.setDisabled(basic.disabled);
+    if (basic.disabled) {
+      btn.setDisabled(!0);
+    } else {
+      btn.setDisabled(!1);
+    }
     if (basic.emoji) {
       btn.setEmoji(basic.emoji);
     }
