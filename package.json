@@ -1,6 +1,6 @@
 {
   "name": "catto.js",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Universal module for everything.",
   "main": "index.js",
   "scripts": {
