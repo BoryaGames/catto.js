@@ -1,5 +1,5 @@
 var Discord = require("discord.js");
-module.exports = class MessageBuilder {
+class MessageBuilder {
   constructor(bot) {
     this.bot = bot;
     this.data = {};
@@ -120,4 +120,5 @@ module.exports = class MessageBuilder {
       throw new Error("Message can't have more than 10 embeds.");
     }
   }
-};
+}
+module.exports = MessageBuilder;
