@@ -1,6 +1,22 @@
 var request = require("./request");
 var Base64 = require("./Base64");
-module.exports = class {
+/**
+ * Class for reading and writing data to a Github repository.
+ * 
+ * @class Github
+ */
+class GitHub {
+  /**
+   * Creates an instance of Github.
+   * 
+   * @constructor
+   * @param {object} [options={}] - Options to initialize the instance.
+   * @param {string} [options.token=""] - Github API token.
+   * @param {string} [options.username=""] - Github username.
+   * @param {string} [options.repository=""] - Name of the repository.
+   * @param {string} [options.message="cattojs"] - Commit message.
+   * 
+   */
   constructor(options) {
     this.options = Object.assign({
       "token": "",
@@ -9,6 +25,16 @@ module.exports = class {
       "message": "cattojs"
     }, options || {});
   }
+  /**
+   * Reads data from a file in the Github repository.
+   * 
+   * @param {string} file - Path to the file to be read.
+   * 
+   * @returns {(string|object)} - The content of the file. If the file is a JSON file, returns a parsed object, otherwise returns a string.
+   * 
+   * @async
+   * @throws {Error} If there is a problem with the API request.
+   */
   async read(file) {
     var value = Base64.decode((await request.get({
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
@@ -22,6 +48,17 @@ module.exports = class {
     } catch(e) {}
     return value;
   }
+  /**
+   * Writes data to a file in the Github repository.
+   * 
+   * @param {string} file - Path to the file to be written.
+   * @param {(string|object)} value - The data to be written to the file. If it is an object, it will be stringified as a JSON file.
+   * 
+   * @returns {boolean} - Returns true if the write was successful.
+   * 
+   * @async
+   * @throws {Error} If there is a problem with the API request.
+   */
   async write(file, value) {
     if (typeof value === "object") {
       value = JSON.stringify(value);
@@ -40,4 +77,5 @@ module.exports = class {
     });
     return !0;
   }
-};
+}
+module.exports = GitHub;
