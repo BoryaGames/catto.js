@@ -139,8 +139,10 @@ module.exports = class extends EventEmitter {
               "bot": this
             });
           } catch(e) {
-            console.error(e);
+            console.log(e);
           }
+        } else {
+          interaction.reply({}).catch(() => {});
         }
       }
       if (interaction.isButton()) {
@@ -159,8 +161,10 @@ module.exports = class extends EventEmitter {
               "bot": this
             });
           } catch(e) {
-            console.error(e);
+            console.log(e);
           }
+        } else {
+          interaction.reply({}).catch(() => {});
         }
       }
     });
@@ -184,7 +188,7 @@ module.exports = class extends EventEmitter {
             "bot": this
           });
         } catch(e) {
-          console.error(e);
+          console.log(e);
         }
       }
       this.emit("message", message);
