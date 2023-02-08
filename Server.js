@@ -129,9 +129,9 @@ class Server extends EventEmitter {
     this.app.ws(...args);
     return this;
   }
-  static(folder, path) {
-    if (path) {
-      this.app.use(path, express.static(path.join(__dirname,"..","..",folder)));
+  static(folder, pathname) {
+    if (pathname) {
+      this.app.use(pathname, express.static(path.join(__dirname,"..","..",folder)));
     } else {
       this.app.use(express.static(path.join(__dirname,"..","..",folder)));
     }
