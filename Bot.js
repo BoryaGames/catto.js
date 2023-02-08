@@ -67,7 +67,7 @@ module.exports = class extends EventEmitter {
               var option = new Discord.SlashCommandUserOption();
               option.setName(opt.name);
               option.setDescription(opt.description);
-              option.setRequired(opt.req);
+              option.setRequired(opt.required);
               cmdo.addUserOption(option);
               break;
             case "channel":
