@@ -23,7 +23,9 @@ class MessageBuilder {
     if (!basic.id && !basic.url) {
       throw new Error("All buttons except URL must have ID.");
     }
-    btn.setCustomId(basic.id);
+    if (basic.id) {
+      btn.setCustomId(basic.id);
+    }
     if (basic.disabled) {
       btn.setDisabled(!0);
     } else {
