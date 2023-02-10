@@ -24,6 +24,7 @@ class GitHub {
       "repository": "",
       "message": "cattojs"
     }, options || {});
+    this.sha = null;
   }
   /**
    * Reads data from a file in the Github repository.
@@ -36,13 +37,15 @@ class GitHub {
    * @throws {Error} If there is a problem with the API request.
    */
   async read(file) {
-    var value = Base64.decode((await request.get({
+    var value = (await request.get({
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
       "headers": {
         "User-Agent": this.options.username,
         "Authorization": `token ${this.options.token}`
       }
-    })).body.content);
+    )).body;
+    this.sha = value.sha;
+    value = Base64.decode(value.content);
     try {
       value = JSON.parse(value);
     } catch(e) {}
@@ -63,7 +66,7 @@ class GitHub {
     if (typeof value === "object") {
       value = JSON.stringify(value);
     }
-    await request.put({
+    this.sha = (await request.put({
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
       "headers": {
         "User-Agent": this.options.username,
@@ -72,9 +75,10 @@ class GitHub {
       "json": !0,
       "body": {
         "content": Base64.encode(value),
-        "message": this.options.message
+        "message": this.options.message,
+        "sha": this.sha
       }
-    });
+    })).body.content.sha;
     return !0;
   }
 }
