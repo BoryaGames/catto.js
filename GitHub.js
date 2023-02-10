@@ -43,7 +43,7 @@ class GitHub {
         "User-Agent": this.options.username,
         "Authorization": `token ${this.options.token}`
       }
-    )).body;
+    })).body;
     this.sha = value.sha;
     value = Base64.decode(value.content);
     try {
