@@ -214,7 +214,7 @@ module.exports = class extends EventEmitter {
           } else if (interaction.isButton()) {
             interaction = new Discord.ButtonInteraction(this.client, req.body);
           }
-          handleInteractionCreate(interaction);
+          this.handleInteractionCreate(interaction);
           res.end();
         }
       } else {
