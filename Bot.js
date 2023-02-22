@@ -1,3 +1,4 @@
+var nacl = require("tweetnacl");
 var events = require("events");
 var Discord = require("discord.js");
 var User = require("./User");
@@ -12,7 +13,8 @@ module.exports = class extends EventEmitter {
       "token": "",
       "intents": 98045,
       "apiv": 10,
-      "slashListener": !0
+      "slashListener": !0,
+      "publicKey": ""
     }, options || {});
     if (client) {
       this.client = client;
@@ -198,7 +200,7 @@ module.exports = class extends EventEmitter {
       var isVerified = nacl.sign.detached.verify(
         Buffer.from(timestamp + body),
         Buffer.from(signature, "hex"),
-        Buffer.from("c25415393572f4ef244747fed4a9fd4218651b837522db08d80e7dc0e6dd2191", "hex")
+        Buffer.from(this.options.publicKey, "hex")
       );
       if (isVerified) {
         if (req.body.type == 1) {
