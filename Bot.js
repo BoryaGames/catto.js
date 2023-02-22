@@ -209,13 +209,31 @@ module.exports = class extends EventEmitter {
           });
         } else {
           var interaction = new Discord.BaseInteraction(this.client, req.body);
-          if (interaction.isChatInputCommand()) {
-            interaction = new Discord.ChatInputCommandInteraction(this.client, req.body);
+          if (interaction.isCommand()) {
+            interaction = new Discord.CommandInteraction(this.client, req.body);
+						if (interaction.isChatInputCommand()) {
+							interaction = new Discord.ChatInputCommandInteraction(this.client, req.body);
+						}
           } else if (interaction.isButton()) {
             interaction = new Discord.ButtonInteraction(this.client, req.body);
           }
+					interaction.reply = async options => {
+    				if (this.deferred || this.replied) throw new Error("Already deferred or replied;");
+    				this.ephemeral = options.ephemeral ?? !1;
+    				var messagePayload = null;
+    				if (options instanceof Discord.MessagePayload) {
+							messagePayload = options;
+						} else {
+							messagePayload = Discord.MessagePayload.create(this, options);
+						}
+    				var { body: data, files } = await messagePayload.resolveBody().resolveFiles();
+						res.json({
+							"type": 4,
+							data
+						});
+    				this.replied = true;
+  				}
           this.handleInteractionCreate(interaction);
-          res.end();
         }
       } else {
         res.status(401).end("Invalid request signature.");
