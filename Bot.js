@@ -121,53 +121,7 @@ module.exports = class extends EventEmitter {
       }
       this.emit("running");
     });
-    this.client.on("interactionCreate", interaction => {
-      if (interaction.isChatInputCommand()) {
-        interaction.user = new User(interaction.user, this);
-        if (interaction.member) {
-          interaction.member.user = new User(interaction.member.user, this);
-        }
-        var command = this.slashCommands.get(interaction.commandName);
-        if (command) {
-          try {
-            command.execute({
-              Discord,
-              User,
-              MessageBuilder,
-              interaction,
-              "cmd": command.name,
-              "bot": this
-            });
-          } catch(e) {
-            console.log(e);
-          }
-        } else {
-          interaction.reply({}).catch(() => {});
-        }
-      }
-      if (interaction.isButton()) {
-        interaction.user = new User(interaction.user, this);
-        if (interaction.member) {
-          interaction.member.user = new User(interaction.member.user, this);
-        }
-        var button = this.buttons.get(interaction.customId);
-        if (button) {
-          try {
-            button({
-              Discord,
-              User,
-              MessageBuilder,
-              interaction,
-              "bot": this
-            });
-          } catch(e) {
-            console.log(e);
-          }
-        } else {
-          interaction.reply({}).catch(() => {});
-        }
-      }
-    });
+    this.client.on("interactionCreate", this.handleInteractionCreate);
     this.client.on("messageCreate", message => {
       message.author = new User(message.author, this);
       if (message.member) {
@@ -235,5 +189,82 @@ module.exports = class extends EventEmitter {
       this.emit("stopped");
     });
     return this;
+  }
+  handleWebInteraction(req, res) {
+    if (req.body) {
+      var signature = req.get("X-Signature-Ed25519");
+      var timestamp = req.get("X-Signature-Timestamp");
+      var body = JSON.stringify(req.body);
+      var isVerified = nacl.sign.detached.verify(
+        Buffer.from(timestamp + body),
+        Buffer.from(signature, "hex"),
+        Buffer.from("c25415393572f4ef244747fed4a9fd4218651b837522db08d80e7dc0e6dd2191", "hex")
+      );
+      if (isVerified) {
+        if (req.body.type == 1) {
+          res.json({
+            "type": 1
+          });
+        } else {
+          var interaction = new Discord.BaseInteraction(req.body);
+          if (interaction.isChatInputCommand()) {
+            interaction = new Discord.ChatInputCommandInteraction(req.body);
+          } else if (interaction.isButton()) {
+            interaction = new Discord.ButtonInteraction(req.body);
+          }
+          handleInteractionCreate(interaction);
+          res.end();
+        }
+      } else {
+        res.status(401).end("Invalid request signature.");
+      }
+    }
+  }
+  handleInteractionCreate(interaction) {
+    if (interaction.isChatInputCommand()) {
+      interaction.user = new User(interaction.user, this);
+      if (interaction.member) {
+        interaction.member.user = new User(interaction.member.user, this);
+      }
+      var command = this.slashCommands.get(interaction.commandName);
+      if (command) {
+        try {
+          command.execute({
+            Discord,
+            User,
+            MessageBuilder,
+            interaction,
+            "cmd": command.name,
+            "bot": this
+          });
+        } catch(e) {
+          console.log(e);
+        }
+      } else {
+        interaction.reply({}).catch(() => {});
+      }
+    }
+    if (interaction.isButton()) {
+      interaction.user = new User(interaction.user, this);
+      if (interaction.member) {
+        interaction.member.user = new User(interaction.member.user, this);
+      }
+      var button = this.buttons.get(interaction.customId);
+      if (button) {
+        try {
+          button({
+            Discord,
+            User,
+            MessageBuilder,
+            interaction,
+            "bot": this
+          });
+        } catch(e) {
+          console.log(e);
+        }
+      } else {
+        interaction.reply({}).catch(() => {});
+      }
+    }
   }
 };
