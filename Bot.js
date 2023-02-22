@@ -208,11 +208,11 @@ module.exports = class extends EventEmitter {
             "type": 1
           });
         } else {
-          var interaction = new Discord.BaseInteraction(req.body);
+          var interaction = new Discord.BaseInteraction(this.client, req.body);
           if (interaction.isChatInputCommand()) {
-            interaction = new Discord.ChatInputCommandInteraction(req.body);
+            interaction = new Discord.ChatInputCommandInteraction(this.client, req.body);
           } else if (interaction.isButton()) {
-            interaction = new Discord.ButtonInteraction(req.body);
+            interaction = new Discord.ButtonInteraction(this.client, req.body);
           }
           handleInteractionCreate(interaction);
           res.end();
