@@ -123,7 +123,7 @@ module.exports = class extends EventEmitter {
       }
       this.emit("running");
     });
-    this.client.on("interactionCreate", this.handleInteractionCreate.bind(this));
+    this.client.on("interactionCreate", this.handleInteractionCreate);
     this.client.on("messageCreate", message => {
       message.author = new User(message.author, this);
       if (message.member) {
