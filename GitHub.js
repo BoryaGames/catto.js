@@ -24,7 +24,7 @@ class GitHub {
       "repository": "",
       "message": "cattojs"
     }, options || {});
-    this.sha = null;
+    this.shas = {};
   }
   /**
    * Reads data from a file in the Github repository.
@@ -44,7 +44,7 @@ class GitHub {
         "Authorization": `token ${this.options.token}`
       }
     })).body;
-    this.sha = value.sha;
+    this.shas[file] = value.sha;
     value = Base64.decode(value.content);
     try {
       value = JSON.parse(value);
@@ -66,7 +66,7 @@ class GitHub {
     if (typeof value === "object") {
       value = JSON.stringify(value);
     }
-    this.sha = (await request.put({
+    this.shas[file] = (await request.put({
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
       "headers": {
         "User-Agent": this.options.username,
@@ -76,7 +76,7 @@ class GitHub {
       "body": {
         "content": Base64.encode(value),
         "message": this.options.message,
-        "sha": this.sha
+        "sha": this.shas[file]
       }
     })).body.content.sha;
     return !0;
