@@ -60,7 +60,7 @@ module.exports = class {
       return !1;
     }
   }
-  async renew(req) {
+  async renew() {
     if (!this.available) {
       throw new Error(`renew: Not available.`);
     }
@@ -84,7 +84,7 @@ module.exports = class {
       return !1;
     }
   }
-  async revoke(req) {
+  async revoke() {
     if (!this.available) {
       throw new Error(`revoke: Not available.`);
     }
