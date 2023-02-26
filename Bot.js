@@ -211,28 +211,34 @@ module.exports = class extends EventEmitter {
           var interaction = new Discord.BaseInteraction(this.client, req.body);
           if (interaction.isCommand()) {
             interaction = new Discord.CommandInteraction(this.client, req.body);
-						if (interaction.isChatInputCommand()) {
-							interaction = new Discord.ChatInputCommandInteraction(this.client, req.body);
-						}
+            if (interaction.isChatInputCommand()) {
+              interaction = new Discord.ChatInputCommandInteraction(this.client, req.body);
+            }
           } else if (interaction.isButton()) {
             interaction = new Discord.ButtonInteraction(this.client, req.body);
           }
-					interaction.reply = async options => {
-    				if (this.deferred || this.replied) throw new Error("Already deferred or replied;");
-    				this.ephemeral = options.ephemeral ?? !1;
-    				var messagePayload = null;
-    				if (options instanceof Discord.MessagePayload) {
-							messagePayload = options;
-						} else {
-							messagePayload = Discord.MessagePayload.create(this, options);
-						}
-    				var { body: data, files } = await messagePayload.resolveBody().resolveFiles();
-						res.json({
-							"type": 4,
-							data
-						});
-    				this.replied = true;
-  				}
+          interaction.reply = async options => {
+            if (this.deferred || this.replied) {
+              throw new Error("Already deferred or replied.");
+	    }
+            if (options.ephemeral !== null && options.ephemeral !== undefined) {
+              this.ephemeral = options.ephemeral;
+	    } else {
+              this.ephemeral = !1;
+            }
+            var messagePayload = null;
+            if (options instanceof Discord.MessagePayload) {
+              messagePayload = options;
+            } else {
+              messagePayload = Discord.MessagePayload.create(this, options);
+            }
+            var { body: data, files } = await messagePayload.resolveBody().resolveFiles();
+            res.json({
+              "type": 4,
+              data
+            });
+            this.replied = !0;
+          }
           this.handleInteractionCreate(interaction);
         }
       } else {
