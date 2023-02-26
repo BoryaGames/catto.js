@@ -23,6 +23,11 @@ module.exports = class extends EventEmitter {
         "intents": new Discord.IntentsBitField(this.options.intents),
         "rest": {
           "version": this.options.apiv
+        },
+        "ws": {
+          "properties": (this.options.mobile ? {
+            "browser": "Discord Android"
+          } : {})
         }
       });
     }
