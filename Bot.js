@@ -288,6 +288,7 @@ module.exports = class extends EventEmitter {
             User,
             MessageBuilder,
             interaction,
+	    "args": button.args,
             "bot": this
           });
         } catch(e) {
