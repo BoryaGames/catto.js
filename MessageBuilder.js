@@ -99,7 +99,9 @@ class MessageBuilder {
       if (this.bot.buttons.get(basic.id)) {
         throw new Error("ID must be unique.");
       }
-      this.bot.buttons.set(basic.id, execute);
+      this.bot.buttons.set(basic.id, Object.assign(basic, {
+        execute
+      }));
     }
     return this;
   }
