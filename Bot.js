@@ -178,8 +178,10 @@ module.exports = class extends EventEmitter {
           } else {
             message.deletedBy = message.author;
           }
-        } else {
+        } else if (now) {
           message.deletedBy = new User(now.executor, this);
+        } else {
+          message.deletedBy = message.author;
         }
         deleteCache[message.author.id] = now;
         this.deleteKey = Base64.encode(JSON.stringify(deleteCache));
