@@ -161,6 +161,11 @@ module.exports = class extends EventEmitter {
       this.emit("botDelete", guild);
     });
   }
+  get servers() {
+    var r = Array.from(this.client.guilds.values());
+    r.count = r.length;
+    return r;
+  }
   slashCommand(basic, options, executor) {
     if (!basic.name.startsWith("/")) {
       throw new Error("Slash command starts with /.");
@@ -221,11 +226,11 @@ module.exports = class extends EventEmitter {
     }
   }
   handleInteractionCreate(interaction) {
+    interaction.user = new User(interaction.user, this);
+    if (interaction.member) {
+      interaction.member.user = new User(interaction.member.user, this);
+    }
     if (interaction.isChatInputCommand()) {
-      interaction.user = new User(interaction.user, this);
-      if (interaction.member) {
-        interaction.member.user = new User(interaction.member.user, this);
-      }
       var command = this.slashCommands.get(interaction.commandName);
       if (command) {
         try {
@@ -243,12 +248,7 @@ module.exports = class extends EventEmitter {
       } else {
         interaction.reply({}).catch(() => {});
       }
-    }
-    if (interaction.isButton()) {
-      interaction.user = new User(interaction.user, this);
-      if (interaction.member) {
-        interaction.member.user = new User(interaction.member.user, this);
-      }
+    } else if (interaction.isButton()) {
       var button = this.buttons.get(interaction.customId);
       if (button) {
         try {
@@ -267,6 +267,8 @@ module.exports = class extends EventEmitter {
       } else {
         interaction.reply({}).catch(() => {});
       }
+    } else {
+      this.emit("interaction", interaction);
     }
   }
 };
