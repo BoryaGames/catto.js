@@ -172,8 +172,11 @@ module.exports = class extends EventEmitter {
           "limit": 50
         });
         var now = log.entries.filter(l => l.targetId == message.author.id).first();
-        if (deleteCache[message.author.id] && now.id == deleteCache[message.author.id].id) {
-          if (now.extra.count > deleteCache[message.author.id].extra.count) {
+        if (!deleteCache[message.guild.id]) {
+          deleteCache[message.guild.id] = {};
+        }
+        if (deleteCache[message.guild.id][message.author.id] && now.id == deleteCache[message.guild.id][message.author.id].id) {
+          if (now.extra.count > deleteCache[message.guild.id][message.author.id].extra.count) {
             message.deletedBy = new User(now.executor, this);
           } else {
             message.deletedBy = message.author;
@@ -183,7 +186,7 @@ module.exports = class extends EventEmitter {
         } else {
           message.deletedBy = message.author;
         }
-        deleteCache[message.author.id] = now;
+        deleteCache[message.guild.id][message.author.id] = now;
         this.deleteKey = Base64.encode(JSON.stringify(deleteCache));
         this.emit("messageDeleted", message);
       }, 1e3);
