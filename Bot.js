@@ -3,7 +3,8 @@ var events = require("events");
 var Discord = require("discord.js");
 var User = require("./User");
 var MessageBuilder = require("./MessageBuilder");
-if (typeof EventEmitter !== "undefined") {} else {
+var Base64 = require("./Base64");
+if (typeof EventEmitter === "undefined") {
   var { EventEmitter } = events;
 }
 module.exports = class extends EventEmitter {
@@ -14,7 +15,8 @@ module.exports = class extends EventEmitter {
       "intents": 98045,
       "apiv": 10,
       "slashListener": !0,
-      "publicKey": ""
+      "publicKey": "",
+      "debug": !1
     }, options || {});
     if (client) {
       this.client = client;
@@ -34,6 +36,9 @@ module.exports = class extends EventEmitter {
     this.buttons = new Map();
     this.commands = new Map();
     this.slashCommands = new Map();
+    if (this.options.debug) {
+      this.client.on("debug", console.log);
+    }
     this.client.on("ready", () => {
       var cmds = [];
       for (var cmd of this.slashCommands.values()) {
@@ -126,7 +131,7 @@ module.exports = class extends EventEmitter {
       if (this.options.slashListener) {
         this.client.application.commands.set(cmds);
       }
-      this.emit("running");
+      this.emit("running", { Discord, MessageBuilder });
     });
     this.client.on("interactionCreate", this.handleInteractionCreate.bind(this));
     this.client.on("messageCreate", message => {
@@ -153,6 +158,33 @@ module.exports = class extends EventEmitter {
         }
       }
       this.emit("message", message);
+    });
+    this.deleteKey = "";
+    this.client.on("messageDelete", message => {
+      message.author = new User(message.author, this);
+      if (message.member) {
+        message.member.user = new User(message.member.user, this);
+      }
+      var deleteCache = JSON.parse(Base64.decode(this.deleteKey));
+      setTimeout(async() => {
+        var log = await message.guild.fetchAuditLogs({
+          "type": 72,
+          "limit": 50
+        });
+        var now = log.entries.filter(l => l.targetId == message.author.id).first();
+        if (deleteCache[message.author.id] && now.id == deleteCache[message.author.id].id) {
+          if (now.extra.count > deleteCache[message.author.id].extra.count) {
+            message.deletedBy = new User(now.executor, this);
+          } else {
+            message.deletedBy = message.author;
+          }
+        } else {
+          message.deletedBy = new User(now.executor, this);
+        }
+        deleteCache[message.author.id] = now;
+        this.deleteKey = Base64.encode(JSON.stringify(deleteCache));
+        this.emit("messageDeleted", message);
+      }, 1e3);
     });
     this.client.on("guildCreate", guild => {
       this.emit("botAdd", guild);
