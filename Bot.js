@@ -159,7 +159,7 @@ module.exports = class extends EventEmitter {
       }
       this.emit("message", message);
     });
-    this.deleteKey = "";
+    this.deleteKey = "e30=";
     this.client.on("messageDelete", message => {
       message.author = new User(message.author, this);
       if (message.member) {
