@@ -175,13 +175,13 @@ module.exports = class extends EventEmitter {
         if (!deleteCache[message.guild.id]) {
           deleteCache[message.guild.id] = {};
         }
-        if (deleteCache[message.guild.id][message.author.id] && now.id == deleteCache[message.guild.id][message.author.id].id) {
+        if (deleteCache[message.guild.id][message.author.id] && now && now.exeuctor && now.id == deleteCache[message.guild.id][message.author.id].id) {
           if (now.extra.count > deleteCache[message.guild.id][message.author.id].extra.count) {
             message.deletedBy = new User(now.executor, this);
           } else {
             message.deletedBy = message.author;
           }
-        } else if (now) {
+        } else if (now && now.executor) {
           message.deletedBy = new User(now.executor, this);
         } else {
           message.deletedBy = message.author;
