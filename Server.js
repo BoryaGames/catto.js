@@ -18,7 +18,7 @@ class Server extends EventEmitter {
     super();
     this.options = Object.assign({
       "domain": null,
-      "port": (process.env.PORT || 80),
+      "port": (process.env.PORT || process.env.SERVER_PORT || 80),
       "ssl": !1,
       "sslProxy": !1,
       "cert": null,
