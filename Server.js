@@ -30,7 +30,7 @@ class Server extends EventEmitter {
       "ejs": !1
     }, options || {});
     this.app = express();
-    if (this.ssl) {
+    if (this.options.ssl) {
       this.server = https.createServer(Object.assign(this.options.serverOptions, {
         "cert": fs.readFileSync(path.join(__dirname, "..", "..", this.options.cert), "utf8"),
         "key": fs.readFileSync(path.join(__dirname, "..", "..", this.options.key), "utf8")
