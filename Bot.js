@@ -159,37 +159,12 @@ module.exports = class extends EventEmitter {
       }
       this.emit("message", message);
     });
-    this.deleteKey = "e30=";
     this.client.on("messageDelete", message => {
       message.author = new User(message.author, this);
       if (message.member) {
         message.member.user = new User(message.member.user, this);
       }
-      var deleteCache = JSON.parse(Base64.decode(this.deleteKey));
-      setTimeout(async() => {
-        var log = await message.guild.fetchAuditLogs({
-          "type": 72,
-          "limit": 50
-        });
-        var now = log.entries.filter(l => l.targetId == message.author.id).first();
-        if (!deleteCache[message.guild.id]) {
-          deleteCache[message.guild.id] = {};
-        }
-        if (deleteCache[message.guild.id][message.author.id] && now && now.exeuctor && now.id == deleteCache[message.guild.id][message.author.id].id) {
-          if (now.extra.count > deleteCache[message.guild.id][message.author.id].extra.count) {
-            message.deletedBy = new User(now.executor, this);
-          } else {
-            message.deletedBy = message.author;
-          }
-        } else if (now && now.executor) {
-          message.deletedBy = new User(now.executor, this);
-        } else {
-          message.deletedBy = message.author;
-        }
-        deleteCache[message.guild.id][message.author.id] = now;
-        this.deleteKey = Base64.encode(JSON.stringify(deleteCache));
-        this.emit("messageDeleted", message);
-      }, 1e3);
+      this.emit("messageDeleted", message);
     });
     this.client.on("guildCreate", guild => {
       this.emit("botAdd", guild);
