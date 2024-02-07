@@ -37,6 +37,15 @@ function post(options) {
 }
 
 /**
+ * PATCH request.
+ * @param {object} options
+ * @return {promise}
+ */
+function patch(options) {
+  return wrap("patch", options);
+}
+
+/**
  * PUT request.
  * @param {object} options
  * @return {promise}
@@ -46,5 +55,5 @@ function put(options) {
 }
 
 module.exports = {
-  get, post, put
+  get, post, patch, put
 };
