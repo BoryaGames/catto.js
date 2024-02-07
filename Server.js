@@ -4,8 +4,13 @@ var expressWs = require("express-ws");
 var http = require("http");
 var https = require("https");
 var bodyParser = require("body-parser");
-var urlencodedParser = bodyParser.urlencoded({"extended":!0});
-var jsonParser = bodyParser.json();
+var urlencodedParser = bodyParser.urlencoded({
+  "limit": "50mb",
+  "extended": !0
+});
+var jsonParser = bodyParser.json({
+  "limit": "50mb"
+});
 var fs = require("fs");
 var path = require("path");
 var session = require("express-session");
