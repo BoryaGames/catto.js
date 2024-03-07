@@ -11,7 +11,9 @@ module.exports = class {
       "flags": 0,
       "banner": "",
       "banner_color": "",
+      "bannerColor": "",
       "accent_color": 0,
+      "accentColor": 0,
       "locale": "",
       "mfa_enabled": !1,
       "premium_type": 0,
@@ -99,7 +101,7 @@ module.exports = class {
     return this.options.banner;
   }
   get bannerColor() {
-    return this.options.banner_color;
+    return this.options.banner_color || this.options.bannerColor;
   }
   get banner() {
     var banneru = this.bannerHash;
@@ -113,7 +115,7 @@ module.exports = class {
     return banneru;
   }
   get accentColor() {
-    return this.options.accent_color;
+    return this.options.accent_color || this.options.accentColor;
   }
   get lang() {
     return this.options.locale;
