@@ -20,6 +20,9 @@ module.exports = class {
     if (options.premium_type) {
       options.premiumType = options.premium_type;
     }
+    if (options.avatar_decoration_data) {
+      options.avatarDecorationData = options.avatar_decoration_data;
+    }
     this.options = Object.assign({
       "id": "",
       "globalName": "",
@@ -37,7 +40,8 @@ module.exports = class {
       "email": "",
       "verified": !1,
       "bot": !1,
-      "system": !1
+      "system": !1,
+      "avatarDecorationData": {}
     }, options || {});
     this.bot = bot;
   }
@@ -51,7 +55,7 @@ module.exports = class {
     return this.options.username;
   }
   get decorationHash() {
-    return this.options.avatar_decoration_data.asset;
+    return (this.options.avatarDecorationData ? this.options.avatarDecorationData.asset : null);
   }
   get decoration() {
     return `https://cdn.discordapp.com/avatar-decoration-presets/${this.decorationHash}.png`;
