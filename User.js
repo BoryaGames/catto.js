@@ -2,21 +2,38 @@ var request = require("./request");
 var Application = require("./Application");
 module.exports = class {
   constructor(options, bot) {
+    if (options.global_name) {
+      options.globalName = options.global_name;
+    }
+    if (options.public_flags) {
+      options.publicFlags = options.public_flags;
+    }
+    if (options.banner_color) {
+      options.bannerColor = options.banner_color;
+    }
+    if (options.accent_color) {
+      options.accentColor = options.accent_color;
+    }
+    if (options.mfa_enabled) {
+      options.mfaEnabled = options.mfa_enabled;
+    }
+    if (options.premium_type) {
+      options.premiumType = options.premium_type;
+    }
     this.options = Object.assign({
       "id": "",
+      "globalName": "",
       "username": "",
       "avatar": "",
       "discriminator": "",
-      "public_flags": 0,
+      "publicFlags": 0,
       "flags": 0,
       "banner": "",
-      "banner_color": "",
       "bannerColor": "",
-      "accent_color": 0,
       "accentColor": 0,
       "locale": "",
-      "mfa_enabled": !1,
-      "premium_type": 0,
+      "mfaEnabled": !1,
+      "premiumType": 0,
       "email": "",
       "verified": !1,
       "bot": !1,
@@ -37,8 +54,17 @@ module.exports = class {
   get id() {
     return this.options.id;
   }
+  get globalName() {
+    return this.options.globalName;
+  }
   get name() {
     return this.options.username;
+  }
+  get decorationHash() {
+    return this.options.avatar_decoration_data.asset;
+  }
+  get decoration() {
+    return `https://cdn.discordapp.com/avatar-decoration-presets/${this.decorationHash}.png`;
   }
   get avatarHash() {
     return this.options.avatar;
@@ -101,7 +127,7 @@ module.exports = class {
     return this.options.banner;
   }
   get bannerColor() {
-    return this.options.banner_color || this.options.bannerColor;
+    return this.options.bannerColor;
   }
   get banner() {
     var banneru = this.bannerHash;
@@ -115,7 +141,7 @@ module.exports = class {
     return banneru;
   }
   get accentColor() {
-    return this.options.accent_color || this.options.accentColor;
+    return this.options.accentColor;
   }
   get lang() {
     return this.options.locale;
@@ -124,19 +150,19 @@ module.exports = class {
     return (this.lang == "ru");
   }
   get is2FAEnabled() {
-    return this.options.mfa_enabled;
+    return this.options.mfaEnabled;
   }
   get hasNitro() {
-    return (this.isBot || this.options.premium_type > 0);
+    return (this.isBot || this.options.premiumType > 0);
   }
   get hasNitroClassic() {
-    return (this.options.premium_type == 1);
+    return (this.options.premiumType == 1);
   }
   get hasNitroBoost() {
-    return (this.isBot || this.options.premium_type == 2);
+    return (this.isBot || this.options.premiumType == 2);
   }
   get hasNitroBasic() {
-    return (this.options.premium_type == 3);
+    return (this.options.premiumType == 3);
   }
   get email() {
     return this.options.email;
