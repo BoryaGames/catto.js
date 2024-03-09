@@ -144,7 +144,7 @@ module.exports = class {
       null,
       null,
       null,
-      null,
+      "APPLICATION_AUTO_MODERATION_RULE_CREATE_BADGE",
       null,
       null,
       null,
@@ -201,10 +201,17 @@ module.exports = class {
     return this.badges.has("EMBEDDED");
   }
   /**
-   * Gets a boolean indicating if the application supports the slash command.
-   * @returns {boolean} A boolean indicating if the application supports the slash command.
+   * Gets a boolean indicating if the application supports the slash commands.
+   * @returns {boolean} A boolean indicating if the application supports the slash commands.
    */
   get supportsSlash() {
     return this.badges.has("APPLICATION_COMMAND_BADGE");
+  }
+  /**
+   * Gets a boolean indicating if the application uses automod.
+   * @returns {boolean} A boolean indicating if the application uses automod.
+   */
+  get supportsAutomod() {
+    return this.badges.has("APPLICATION_AUTO_MODERATION_RULE_CREATE_BADGE");
   }
 };
