@@ -40,16 +40,6 @@ module.exports = class {
       "system": !1
     }, options || {});
     this.bot = bot;
-    if (this.isBot) {
-      request.get({
-        "url": `https://discord.com/api/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`,
-        "headers": {
-          "Authorization": `Bot ${this.bot.client.token}`
-        }
-      }).then(application => {
-        this.application = new Application(application.body);
-      });
-    }
   }
   get id() {
     return this.options.id;
@@ -178,5 +168,15 @@ module.exports = class {
   }
   get isSystem() {
     return this.options.system;
+  }
+  async requestApplication() {
+    if (this.isBot) {
+      this.application = new Application((await request.get({
+        "url": `https://discord.com/api/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`,
+        "headers": {
+          "Authorization": `Bot ${this.bot.client.token}`
+        }
+      })).body);
+    }
   }
 };
