@@ -24,6 +24,7 @@ module.exports = class extends EventEmitter {
     }
     this.commands = new Map();
     this.slashCommands = new Map();
+    this.menubtn = "commands";
     if (this.options.debug) {
       this.client.on("polling_error", console.log);
       this.client.on("webhook_error", console.log);
@@ -31,7 +32,6 @@ module.exports = class extends EventEmitter {
     } else {
       this.client.on("polling_error", () => {});
       this.client.on("webhook_error", () => {});
-      this.client.on("error", () => {});
     }
     this.client.on("message", message => {
       message = new TelegramMessage(message, this);
@@ -42,7 +42,7 @@ module.exports = class extends EventEmitter {
         try {
           command.execute({
             message,
-            cmd,
+            command,
             args,
             "bot": this
           });
@@ -73,6 +73,10 @@ module.exports = class extends EventEmitter {
     }));
     return this;
   }
+  menuButton(target, label, link) {
+    this.menubtn = { target, label, link };
+    return this;
+  }
   async run() {
     await this.client.startPolling();
     var commands = [];
@@ -83,6 +87,23 @@ module.exports = class extends EventEmitter {
       });
     }
     this.client.setMyCommands(commands);
+    if (this.menubtn.target == "web") {
+      this.client.setChatMenuButton({
+        "menu_button": JSON.stringify({
+          "type": "web_app",
+          "text": this.menubtn.label,
+          "web_app": {
+            "url": this.menubtn.link
+          }
+        })
+      });
+    } else {
+      this.client.setChatMenuButton({
+        "menu_button": JSON.stringify({
+          "type": "commands"
+        })
+      });
+    }
     return this;
   }
   async stop() {
