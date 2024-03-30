@@ -27,7 +27,10 @@
     "cattoes",
     "easy",
     "slash",
-    "random"
+    "random",
+    "telegram",
+    "api",
+    "telegraf"
   ],
   "author": "cat1234",
   "license": "ISC",

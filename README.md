@@ -4,7 +4,7 @@
 ![Contributors](https://img.shields.io/github/contributors/BoryaGames/catto.js)
 ![Chat on Discord](https://img.shields.io/discord/916772281747931198?logo=discord)
 
-✨ catto.js is a new version of universal catto package, which allows easy web server making, random generation and Discord authorization. ✨
+✨ catto.js is a new version of universal catto package, which allows easy web server making, random generation, Discord authorization and Discord/Telegram bots. ✨
 ## Features
 - Creating web server.
 - Adding SSL certificate and key to your web server.
@@ -13,6 +13,7 @@
 - Authorizing users using Discord API OAuth2.
 - Generating random numbers and booleans.
 - Easy removing elements from Arrays.
+- Creating Discord and Telegram bots using simple API.
 
 ## Installation
 ```sh
