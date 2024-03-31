@@ -1,6 +1,7 @@
 var events = require("events");
 var Telegram = require("node-telegram-bot-api");
 var TelegramMessage = require("./TelegramMessage");
+var TelegramInteraction = require("./TelegramInteraction");
 if (typeof EventEmitter === "undefined") {
   var { EventEmitter } = events;
 }
@@ -51,6 +52,9 @@ module.exports = class extends EventEmitter {
         }
       }
       this.emit("message", message);
+    });
+    this.client.on("callback_query", interaction => {
+      this.emit("interaction", new TelegramInteraction(interaction, this));
     });
   }
   command(basic, executor) {

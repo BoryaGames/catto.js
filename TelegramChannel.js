@@ -1,3 +1,4 @@
+var TelegramMessageBuilder = require("./TelegramMessageBuilder");
 module.exports = class {
   constructor(data, bot) {
     this.data = data;
@@ -21,10 +22,13 @@ module.exports = class {
     this.typingLoop = null;
   }
   async send(data) {
-    if (typeof data !== "object") {
+    if (typeof data === "string") {
       data = {
         "content": data
       };
+    }
+    if (data instanceof TelegramMessageBuilder) {
+      data = data.data;
     }
     await this.bot.client.sendMessage(this.id, data.content, {
       "reply_parameters": data.replyParameters ? {
