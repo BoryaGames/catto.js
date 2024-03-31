@@ -1,9 +1,11 @@
 var TelegramChannel = require("./TelegramChannel");
+var TelegramUser = require("./TelegramUser");
 module.exports = class {
   constructor(data, bot) {
     this.data = data;
     this.bot = bot;
     this.channel = new TelegramChannel(this.data.chat, bot);
+    this.user = new TelegramUser(this.data.from, bot);
   }
   get id() {
     return this.data.message_id;
