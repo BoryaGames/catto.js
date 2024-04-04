@@ -1,7 +1,9 @@
 var events = require("events");
+var crypto = require("crypto");
 var Telegram = require("node-telegram-bot-api");
 var TelegramMessage = require("./TelegramMessage");
 var TelegramInteraction = require("./TelegramInteraction");
+var TelegramUser = require("./TelegramUser");
 if (typeof EventEmitter === "undefined") {
   var { EventEmitter } = events;
 }
@@ -25,6 +27,7 @@ module.exports = class extends EventEmitter {
     }
     this.commands = new Map();
     this.slashCommands = new Map();
+    this.users = new Map();
     this.menubtn = "commands";
     if (this.options.debug) {
       this.client.on("polling_error", console.log);
@@ -109,6 +112,14 @@ module.exports = class extends EventEmitter {
       });
     }
     return this;
+  }
+  parseInitData(qs) {
+    var dcs = decodeURIComponent(qs).split("&").sort();
+    var hash = dcs.find(a => a.startsWith("hash=")).split("=")[1];
+    dcs = dcs.filter(a => !a.startsWith("hash=")).join("\n");
+    var secretKey = crypto.createHmac("sha256", "WebAppData").update("7198222939:AAH3IXLpmxhyRP2A_GOI7LR5UwA0ABLEWnQ").digest();
+    var checkHash = crypto.createHmac("sha256", secretKey).update(dcs).digest("hex");
+    return (checkHash === hash ? new TelegramUser(JSON.parse(dcs.split("\n").find(a => a.startsWith("user=")).split("=")[1]), this) : null);
   }
   async stop() {
     await this.client.stopPolling();

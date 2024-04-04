@@ -5,7 +5,9 @@ module.exports = class {
     this.data = data;
     this.bot = bot;
     this.channel = new TelegramChannel(this.data.chat, bot);
-    this.user = new TelegramUser(this.data.from, bot);
+    this.user = this.bot.users.get(this.data.from.id) || new TelegramUser(this.data.from, bot);
+    this.user.data = this.data.from;
+    this.bot.users.set(this.user.id, this.user);
   }
   get id() {
     return this.data.message_id;
