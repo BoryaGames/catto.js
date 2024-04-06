@@ -55,7 +55,7 @@ module.exports = class extends EventEmitter {
                 option.setMinLength(opt.min);
               }
               if (opt.max) {
-                option.setMinLength(opt.max);
+                option.setMaxLength(opt.max);
               }
               if (opt.choices) {
                 option.setChoices(...opt.choices);
