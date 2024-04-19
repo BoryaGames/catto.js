@@ -23,6 +23,7 @@ module.exports = class extends EventEmitter {
     } else {
       this.client = new Discord.Client({
         "intents": new Discord.IntentsBitField(this.options.intents),
+        "partials": [Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.GuildScheduledEvent, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.ThreadMember, Discord.Partials.User],
         "rest": {
           "version": this.options.apiv
         },
