@@ -15,6 +15,7 @@ module.exports = class extends EventEmitter {
       "intents": 98045,
       "apiv": 10,
       "slashListener": !0,
+      "buttonListener": !0,
       "publicKey": "",
       "debug": !1
     }, options || {});
@@ -249,7 +250,7 @@ module.exports = class extends EventEmitter {
     if (interaction.member) {
       interaction.member.user = new User(interaction.member.user, this);
     }
-    if (interaction.isChatInputCommand()) {
+    if (this.options.slashListener && interaction.isChatInputCommand()) {
       var command = this.slashCommands.get(interaction.commandName);
       if (command) {
         try {
@@ -267,7 +268,7 @@ module.exports = class extends EventEmitter {
       } else {
         interaction.reply({}).catch(() => {});
       }
-    } else if (interaction.isButton()) {
+    } else if (this.options.buttonListener && interaction.isButton()) {
       var button = this.buttons.get(interaction.customId);
       if (button) {
         try {
