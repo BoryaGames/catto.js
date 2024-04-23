@@ -168,7 +168,9 @@ module.exports = class extends EventEmitter {
       this.emit("message", message);
     });
     this.client.on("messageDelete", message => {
-      message.author = new User(message.author, this);
+      if (message.author) {
+        message.author = new User(message.author, this);
+      }
       if (message.member) {
         message.member.user = new User(message.member.user, this);
       }
@@ -182,7 +184,7 @@ module.exports = class extends EventEmitter {
     });
   }
   get servers() {
-    var r = Array.from(this.client.guilds.values());
+    var r = Array.from(this.client.guilds.cache.values());
     r.count = r.length;
     return r;
   }
