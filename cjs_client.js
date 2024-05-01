@@ -39,7 +39,7 @@
     output = output.replace(/&lt;%c(lient)\*?# +(.+?) +%&gt;/g, "");
     return output;
   }
-  window.addEventListener("load", () => {
+  window.addEventListener("DOMContentLoaded", () => {
     if (typeof window.$ === "undefined") {
       window.$ = selector => document.querySelector(selector);
     }
