@@ -4,6 +4,7 @@
 
 (() => {
   var incid = -1;
+  var cache = {};
   function render(code) {
     var parts = code.split(/&lt;%c(?:lient)?(?!\*)(?!=) +(.+?) +%&gt;/g);
     var output = "";
@@ -13,26 +14,25 @@
     });
     eval(compile);
     function rpf(_, t, g, r) {
+      var result = eval(g);
+      if (r) {
+        result = result.split("<").join("&lt;").split(">").join("&gt;");
+      }
       if (t) {
         function update(id, code, format) {
+          var result2 = eval(code);
           if (format) {
-            document.querySelector(`#_cattojs_d${id}`).innerHTML = eval(code).split("<").join("&lt;").split(">").join("&gt;");
-          } else {
+            result2 = result2.split("<").join("&lt;").split(">").join("&gt;");
+          }
+          if (cache[id] != result2) {
+            cache[id] = result2;
             document.querySelector(`#_cattojs_d${id}`).innerHTML = eval(code);
           }
         }
         setInterval(update.bind(null, ++incid, g, r), 1);
-        if (r) {
-          return `<span id="_cattojs_d${incid}">${eval(g).split("<").join("&lt;").split(">").join("&gt;")}</span>`;
-        } else {
-          return `<span id="_cattojs_d${incid}">${eval(g)}</span>`;
-        }
+        return `<span id="_cattojs_d${incid}">${result}</span>`;
       }
-      if (r) {
-        return eval(g).split("<").join("&lt;").split(">").join("&gt;");
-      } else {
-        return eval(g);
-      }
+      return result;
     }
     output = output.replace(/&lt;%c(?:lient)?(\*)?= +(.+?) +%&gt;/g, (_, t, g) => rpf(_, t, g, !0));
     output = output.replace(/&lt;%c(?:lient)?(\*)?- +(.+?) +%&gt;/g, (_, t, g) => rpf(_, t, g, !1));
