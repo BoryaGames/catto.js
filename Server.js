@@ -1,6 +1,9 @@
+var HTML = require("./HTML");
 var events = require("events");
 var express = require("express");
 var expressWs = require("express-ws");
+var fs = require("fs");
+var vm = require("vm");
 var http = require("http");
 var https = require("https");
 var bodyParser = require("body-parser");
@@ -32,7 +35,8 @@ class Server extends EventEmitter {
       "expressWsiOptions": {},
       "secret": null,
       "storeOptions": {},
-      "ejs": !1
+      "ejs": !1,
+      "cjs": !1
     }, options || {});
     this.app = express();
     if (this.options.ssl) {
@@ -49,6 +53,11 @@ class Server extends EventEmitter {
     this.app.use(jsonParser);
     if (this.options.ejs) {
       this.app.set("view engine", "ejs");
+    }
+    if (this.options.cjs) {
+      this.app.engine("cjs", this.renderCJS).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
+        res.sendFile(path.join(__dirname, "cjs_client.js"));
+      });
     }
     if (this.options.secret) {
       this.app.use(session({
@@ -141,6 +150,21 @@ class Server extends EventEmitter {
       this.app.use(express.static(path.join(__dirname,"..","..",folder)));
     }
     return this;
+  }
+  renderCJS(filepath, options, callback) {
+    var code = fs.readFileSync(filepath).toString("utf-8");
+    var parts = code.split(/<%s(?:erver)?(?!\*)(?!=) +(.+?) +%>/g);
+    var compile = `var __output = "<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\n`;
+    parts.forEach((part, index) => {
+      compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)};\n`);
+    });
+    var context = vm.createContext(options);
+    vm.runInContext(compile, context);
+    var output = context.__output;
+    output = output.replace(/<%s(?:erver)?(?!\*)= +(.+?) +%>/g, (_, g) => HTML.disable(vm.runInContext(g, context)));
+    output = output.replace(/<%s(?:erver)?(?!\*)- +(.+?) +%>/g, (_, g) => vm.runInContext(g, context));
+    output = output.replace(/<%s(erver)\*?# +(.+?) +%>/g, "");
+    callback(null, output);
   }
   static fa(text) {
     return (req,res) => {
