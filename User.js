@@ -230,6 +230,9 @@ module.exports = class {
   get isSystem() {
     return this.options.system;
   }
+  get isSpammer() {
+    return this.flags.has("SPAMMER");
+  }
   async requestApplication() {
     if (this.isBot) {
       this.application = new Application((await request.get({
