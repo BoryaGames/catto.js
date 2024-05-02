@@ -1,4 +1,3 @@
-var HTML = require("./HTML");
 var events = require("events");
 var express = require("express");
 var expressWs = require("express-ws");
@@ -158,8 +157,12 @@ class Server extends EventEmitter {
   }
   renderCJS(filepath, options, callback) {
     var code = fs.readFileSync(filepath).toString("utf-8");
+    var doctype = code.startsWith("<!DOCTYPE html>");
+    if (doctype) {
+      code = code.replace(/^<!DOCTYPE html>(\r?\n)?/, "");
+    }
     var parts = code.split(/<%s(?:erver)?(?!\*)(?!=) +(.+?) +%>/g);
-    var compile = `var __output = "<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\nfunction __escape(str) {\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
+    var compile = `var __output = "${doctype ? "<!DOCTYPE html>\\n" : ""}<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\nfunction __escape(str) {\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
     parts.forEach((part, index) => {
       compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)}.replace(/<%s(?:erver)?(?!\\*)= +(.+?) +%>/g, (_, g) => __escape(eval(g))).replace(/<%s(?:erver)?(?!\\*)- +(.+?) +%>/g, (_, g) => eval(g)).replace(/<%s(erver)\\*?# +(.+?) +%>/g, "");\n`);
     });
