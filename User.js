@@ -81,15 +81,6 @@ module.exports = class {
     return `${this.name}#${this.discrim}`;
   }
   get flags() {
-    var i = 23;
-    var p = (this.options.flags ? (this.options.flags.bitfield ? this.options.flags.bitfield : this.options.flags) : (this.options.publicFlags.bitfield ? this.options.publicFlags.bitfield : this.options.publicFlags));
-    var f = [];
-    while (--i > -1) {
-      if (p >= (1 << i)) {
-        p -= (1 << i);
-        f.push(i);
-      }
-    }
     var fl = [
       "STAFF",
       "PARTNER",
@@ -144,6 +135,15 @@ module.exports = class {
       "COLLABORATOR",
       "RESTRICTED_COLLABORATOR"
     ];
+    var i = (fl.length + 1);
+    var p = (this.options.flags ? (this.options.flags.bitfield ? this.options.flags.bitfield : this.options.flags) : (this.options.publicFlags.bitfield ? this.options.publicFlags.bitfield : this.options.publicFlags));
+    var f = [];
+    while (--i > -1) {
+      if (p >= (1 << i)) {
+        p -= (1 << i);
+        f.push(i);
+      }
+    }
     return f.map(n => fl[n]);
   }
   get badges() {
