@@ -80,12 +80,12 @@ module.exports = class {
   get tag() {
     return `${this.name}#${this.discrim}`;
   }
-  get badges() {
+  get flags() {
     var i = 23;
     var p = (this.options.flags ? (this.options.flags.bitfield ? this.options.flags.bitfield : this.options.flags) : (this.options.publicFlags.bitfield ? this.options.publicFlags.bitfield : this.options.publicFlags));
     var f = [];
     while (--i > -1) {
-      if (![21, 20, 15, 13, 12, 11, 5, 4].includes(i) && p >= (1 << i)) {
+      if (p >= (1 << i)) {
         p -= (1 << i);
         f.push(i);
       }
@@ -95,27 +95,78 @@ module.exports = class {
       "PARTNER",
       "HYPESQUAD",
       "BUG_HUNTER_LEVEL_1",
-      null,
-      null,
+      "MFA_SMS",
+      "PREMIUM_PROMO_DISMISSED",
       "HYPESQUAD_ONLINE_HOUSE_1",
       "HYPESQUAD_ONLINE_HOUSE_2",
       "HYPESQUAD_ONLINE_HOUSE_3",
       "PREMIUM_EARLY_SUPPORTER",
       "TEAM_PSEUDO_USER",
-      null,
-      null,
-      null,
+      "INTERNAL_APPLICATION",
+      "SYSTEM",
+      "HAS_UNREAD_URGENT_MESSAGES",
       "BUG_HUNTER_LEVEL_2",
-      null,
+      "UNDERAGE_DELETED",
       "VERIFIED_BOT",
       "VERIFIED_DEVELOPER",
       "CERTIFIED_MODERATOR",
       "BOT_HTTP_INTERACTIONS",
+      "SPAMMER",
+      "DISABLE_PREMIUM",
+      "ACTIVE_DEVELOPER",
       null,
       null,
-      "ACTIVE_DEVELOPER"
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "HIGH_GLOBAL_RATE_LIMIT",
+      "DELETED",
+      "DISABLED_SUSPICIOUS_ACTIVITY",
+      "SELF_DELETED",
+      "PREMIUM_DISCRIMINATOR",
+      "USED_DESKTOP_CLIENT",
+      "USED_WEB_CLIENT",
+      "USED_MOBILE_CLIENT",
+      "DISABLED",
+      "VERIFIED_EMAIL",
+      "QUARANTINED",
+      "COLLABORATOR",
+      "RESTRICTED_COLLABORATOR"
     ];
     return f.map(n => fl[n]);
+  }
+  get badges() {
+    return this.flags.filter(flag => ![
+      "MFA_SMS",
+      "PREMIUM_PROMO_DISMISSED",
+      "TEAM_PSEUDO_USER",
+      "INTERNAL_APPLICATION",
+      "SYSTEM",
+      "HAS_UNREAD_URGENT_MESSAGES",
+      "UNDERAGE_DELETED",
+      "VERIFIED_BOT",
+      "BOT_HTTP_INTERACTIONS",
+      "SPAMMER",
+      "DISABLE_PREMIUM",
+      "HIGH_GLOBAL_RATE_LIMIT",
+      "DELETED",
+      "DISABLED_SUSPICIOUS_ACTIVITY",
+      "SELF_DELETED",
+      "PREMIUM_DISCRIMINATOR",
+      "USED_DESKTOP_CLIENT",
+      "USED_WEB_CLIENT",
+      "USED_MOBILE_CLIENT",
+      "DISABLED",
+      "VERIFIED_EMAIL",
+      "QUARANTINED",
+      "COLLABORATOR",
+      "RESTRICTED_COLLABORATOR"
+    ].includes(flag));
   }
   get bannerHash() {
     return this.options.banner;
@@ -168,7 +219,13 @@ module.exports = class {
     return this.options.bot;
   }
   get isBotVerified() {
-    return this.badges.has("VERIFIED_BOT");
+    return this.isBot && this.flags.has("VERIFIED_BOT");
+  }
+  get isBotHTTP() {
+    return this.isBot && this.flags.has("BOT_HTTP_INTERACTIONS");
+  }
+  get isBotWS() {
+    return this.isBot && !this.isBotHTTP;
   }
   get isSystem() {
     return this.options.system;
