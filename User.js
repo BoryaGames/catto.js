@@ -133,8 +133,14 @@ module.exports = class {
       "USED_WEB_CLIENT",
       "USED_MOBILE_CLIENT",
       "DISABLED",
+      null,
       "VERIFIED_EMAIL",
       "QUARANTINED",
+      null,
+      null,
+      null,
+      null,
+      null,
       "COLLABORATOR",
       "RESTRICTED_COLLABORATOR"
     ];
