@@ -36,7 +36,8 @@ class Server extends EventEmitter {
       "secret": null,
       "storeOptions": {},
       "ejs": !1,
-      "cjs": !1
+      "cjs": !1,
+      "proxies": 0
     }, options || {});
     this.app = express();
     if (this.options.ssl) {
@@ -48,7 +49,11 @@ class Server extends EventEmitter {
       this.server = http.createServer(this.options.serverOptions, this.app);
     }
     this.expressWsi = expressWs(this.app, this.server, this.options.expressWsiOptions);
-    this.app.set("trust proxy", !0);
+    if (this.options.proxies == -1) {
+      this.app.set("trust proxy", !0);
+    } else if (this.options.proxies > 0) {
+      this.app.set("trust proxy", this.options.proxies);
+    }
     this.app.use(urlencodedParser);
     this.app.use(jsonParser);
     if (this.options.ejs) {
@@ -154,17 +159,13 @@ class Server extends EventEmitter {
   renderCJS(filepath, options, callback) {
     var code = fs.readFileSync(filepath).toString("utf-8");
     var parts = code.split(/<%s(?:erver)?(?!\*)(?!=) +(.+?) +%>/g);
-    var compile = `var __output = "<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\n`;
+    var compile = `var __output = "<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\nfunction __escape(str) {\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
     parts.forEach((part, index) => {
-      compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)};\n`);
+      compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)}.replace(/<%s(?:erver)?(?!\\*)= +(.+?) +%>/g, (_, g) => __escape(eval(g))).replace(/<%s(?:erver)?(?!\\*)- +(.+?) +%>/g, (_, g) => eval(g)).replace(/<%s(erver)\\*?# +(.+?) +%>/g, "");\n`);
     });
     var context = vm.createContext(options);
     vm.runInContext(compile, context);
-    var output = context.__output;
-    output = output.replace(/<%s(?:erver)?(?!\*)= +(.+?) +%>/g, (_, g) => HTML.disable(vm.runInContext(g, context)));
-    output = output.replace(/<%s(?:erver)?(?!\*)- +(.+?) +%>/g, (_, g) => vm.runInContext(g, context));
-    output = output.replace(/<%s(erver)\*?# +(.+?) +%>/g, "");
-    callback(null, output);
+    callback(null, context.__output);
   }
   static fa(text) {
     return (req,res) => {

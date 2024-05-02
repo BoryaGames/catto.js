@@ -6,15 +6,14 @@
   var incid = -1;
   var cache = {};
   function render(code) {
-    var parts = code.split(/&lt;%c(?:lient)?(?!\*)(?!=) +(.+?) +%&gt;/g);
+    code = code.split("&lt;").join("<").split("&gt;").join(">");
+    var parts = code.split(/<%c(?:lient)?(?!\*)(?!=) +(.+?) +%>/g);
     var output = "";
     var compile = "";
     parts.forEach((part, index) => {
-      compile += ((index + 1) % 2 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)};\n`);
+      compile += ((index + 1) % 2 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<%c(?:lient)?(\\*)?= +(.+?) +%>/g, (_, t, g) => __rpf(t, g, eval(g), !0)).replace(/<%c(?:lient)?(\\*)?- +(.+?) +%>/g, (_, t, g) => __rpf(t, g, eval(g), !1)).replace(/<%c(lient)\\*?# +(.+?) +%>/g, "");\n`);
     });
-    eval(compile);
-    function rpf(_, t, g, r) {
-      var result = eval(g);
+    window.__rpf = (t, g, result, r) => {
       if (r) {
         result = result.split("<").join("&lt;").split(">").join("&gt;");
       }
@@ -33,10 +32,9 @@
         return `<span id="_cattojs_d${incid}">${result}</span>`;
       }
       return result;
-    }
-    output = output.replace(/&lt;%c(?:lient)?(\*)?= +(.+?) +%&gt;/g, (_, t, g) => rpf(_, t, g, !0));
-    output = output.replace(/&lt;%c(?:lient)?(\*)?- +(.+?) +%&gt;/g, (_, t, g) => rpf(_, t, g, !1));
-    output = output.replace(/&lt;%c(lient)\*?# +(.+?) +%&gt;/g, "");
+    };
+    eval(compile);
+    delete window.__rpf;
     return output;
   }
   window.addEventListener("DOMContentLoaded", () => {
