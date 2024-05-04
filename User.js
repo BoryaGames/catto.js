@@ -136,10 +136,10 @@ module.exports = class {
       "RESTRICTED_COLLABORATOR"
     ];
     var i = -1;
-    var p = (this.options.flags ? (this.options.flags.bitfield ? this.options.flags.bitfield : this.options.flags) : (this.options.publicFlags.bitfield ? this.options.publicFlags.bitfield : this.options.publicFlags));
+    var p = BigInt(this.options.flags ? (this.options.flags.bitfield ? this.options.flags.bitfield : this.options.flags) : (this.options.publicFlags.bitfield ? this.options.publicFlags.bitfield : this.options.publicFlags));
     var f = [];
     while (++i < fl.length) {
-      if (p & (1 << i)) {
+      if (p & (1n << BigInt(i))) {
         f.push(i);
       }
     }
