@@ -14,6 +14,9 @@
       compile += ((index + 1) % 2 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<%c(?:lient)?(\\*)?= +(.+?) +%>/g, (_, t, g) => __rpf(t, g, eval(g), !0)).replace(/<%c(?:lient)?(\\*)?- +(.+?) +%>/g, (_, t, g) => __rpf(t, g, eval(g), !1)).replace(/<%c(lient)\\*?# +(.+?) +%>/g, "");\n`);
     });
     window.__rpf = (t, g, result, r) => {
+      if (typeof result !== "string") {
+        result = result.toString();
+      }
       if (r) {
         result = result.split("<").join("&lt;").split(">").join("&gt;");
       }
