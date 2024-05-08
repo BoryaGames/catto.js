@@ -59,9 +59,7 @@ class Server extends EventEmitter {
       this.app.set("view engine", "ejs");
     }
     if (this.options.cjs) {
-      this.app.engine("cjs", this.renderCJS).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
-        res.sendFile(path.join(__dirname, "cjs_client.js"));
-      });
+      Server.injectCJS(this.app);
     }
     if (this.options.secret) {
       this.app.use(session({
@@ -155,7 +153,7 @@ class Server extends EventEmitter {
     }
     return this;
   }
-  renderCJS(filepath, options, callback) {
+  static renderCJS(filepath, options, callback) {
     var code = fs.readFileSync(filepath).toString("utf-8");
     var doctype = code.startsWith("<!DOCTYPE html>");
     if (doctype) {
@@ -169,6 +167,11 @@ class Server extends EventEmitter {
     var context = vm.createContext(options);
     vm.runInContext(compile, context);
     callback(null, context.__output);
+  }
+  static injectCJS(app) {
+    app.engine("cjs", Server.renderCJS).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
+      res.sendFile(path.join(__dirname, "cjs_client.js"));
+    });
   }
   static fa(text) {
     return (req,res) => {
