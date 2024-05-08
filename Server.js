@@ -162,7 +162,7 @@ class Server extends EventEmitter {
       code = code.replace(/^<!DOCTYPE html>(\r?\n)?/, "");
     }
     var parts = code.split(/<%s(?:erver)?(?!\*)(?!=) +(.+?) +%>/g);
-    var compile = `var __output = "${doctype ? "<!DOCTYPE html>\\n" : ""}<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\nfunction __escape(str) {\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
+    var compile = `var __output = "${doctype ? "<!DOCTYPE html>\\n" : ""}<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\nfunction __escape(str) {\n  if (typeof str !== "string") {\n    str = str.toString();\n  }\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
     parts.forEach((part, index) => {
       compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)}.replace(/<%s(?:erver)?(?!\\*)= +(.+?) +%>/g, (_, g) => __escape(eval(g))).replace(/<%s(?:erver)?(?!\\*)- +(.+?) +%>/g, (_, g) => eval(g)).replace(/<%s(erver)\\*?# +(.+?) +%>/g, "");\n`);
     });
