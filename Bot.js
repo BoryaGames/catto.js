@@ -134,10 +134,15 @@ module.exports = class extends EventEmitter {
               break;
           }
         }
-        cmds.push(cmdo);
+        cmds.push(Object.assign(cmdo.toJSON(), {
+          "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+          "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+        }));
       }
       if (this.options.slashListener) {
-        this.client.application.commands.set(cmds);
+        this.client.rest.put(`/applications/${this.client.application.id}/commands`, {
+          "body": cmds
+        });
       }
       this.emit("running", { Discord, MessageBuilder });
     });
