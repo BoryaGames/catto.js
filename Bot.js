@@ -38,6 +38,8 @@ module.exports = class extends EventEmitter {
     this.buttons = new Map();
     this.commands = new Map();
     this.slashCommands = new Map();
+    this.userContexts = new Map();
+    this.messageContexts = new Map();
     if (this.options.debug) {
       this.client.on("debug", console.log);
     }
@@ -139,12 +141,28 @@ module.exports = class extends EventEmitter {
           "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
         }));
       }
+      for (var cmd of this.userContexts.values()) {
+        var cmdo = new Discord.ContextMenuCommandBuilder();
+        cmdo.setType(2).setName(cmd.name).setDMPermission(cmd.dm);
+        cmds.push(Object.assign(cmdo.toJSON(), {
+          "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+          "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+        }));
+      }
+      for (var cmd of this.messageContexts.values()) {
+        var cmdo = new Discord.ContextMenuCommandBuilder();
+        cmdo.setType(3).setName(cmd.name).setDMPermission(cmd.dm);
+        cmds.push(Object.assign(cmdo.toJSON(), {
+          "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+          "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+        }));
+      }
       if (this.options.slashListener) {
         this.client.rest.put(`/applications/${this.client.application.id}/commands`, {
           "body": cmds
         });
       }
-      this.emit("running", { Discord, MessageBuilder });
+      this.emit("running", { Discord });
     });
     this.client.on("interactionCreate", this.handleInteractionCreate.bind(this));
     this.client.on("messageCreate", message => {
@@ -160,7 +178,6 @@ module.exports = class extends EventEmitter {
           command.execute({
             Discord,
             User,
-            MessageBuilder,
             message,
             cmd,
             args,
@@ -204,6 +221,28 @@ module.exports = class extends EventEmitter {
     basic.name = basic.name.substring(1);
     this.slashCommands.set(basic.name, Object.assign(basic, {
       "options": options,
+      "execute": executor
+    }));
+    return this;
+  }
+  userContext(basic, executor) {
+    if (typeof basic === "string") {
+      basic = {
+        "name": basic
+      };
+    }
+    this.userContexts.set(basic.name, Object.assign(basic, {
+      "execute": executor
+    }));
+    return this;
+  }
+  messageContext(basic, executor) {
+    if (typeof basic === "string") {
+      basic = {
+        "name": basic
+      };
+    }
+    this.messageContexts.set(basic.name, Object.assign(basic, {
       "execute": executor
     }));
     return this;
@@ -259,6 +298,42 @@ module.exports = class extends EventEmitter {
     }
     if (this.options.slashListener && interaction.isChatInputCommand()) {
       var command = this.slashCommands.get(interaction.commandName);
+      if (command) {
+        try {
+          command.execute({
+            Discord,
+            User,
+            MessageBuilder,
+            interaction,
+            "cmd": command.name,
+            "bot": this
+          });
+        } catch(e) {
+          console.log(e);
+        }
+      } else {
+        interaction.reply({}).catch(() => {});
+      }
+    } else if (this.options.slashListener && interaction.isUserContextMenuCommand()) {
+      var command = this.userContexts.get(interaction.commandName);
+      if (command) {
+        try {
+          command.execute({
+            Discord,
+            User,
+            MessageBuilder,
+            interaction,
+            "cmd": command.name,
+            "bot": this
+          });
+        } catch(e) {
+          console.log(e);
+        }
+      } else {
+        interaction.reply({}).catch(() => {});
+      }
+    } else if (this.options.slashListener && interaction.isMessageContextMenuCommand()) {
+      var command = this.messageContexts.get(interaction.commandName);
       if (command) {
         try {
           command.execute({
