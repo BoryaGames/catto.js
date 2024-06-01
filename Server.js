@@ -36,7 +36,8 @@ class Server extends EventEmitter {
       "storeOptions": {},
       "ejs": !1,
       "cjs": !1,
-      "proxies": 0
+      "proxies": 0,
+      "bodyCompatible": !1
     }, options || {});
     this.app = express();
     if (this.options.ssl) {
@@ -53,8 +54,10 @@ class Server extends EventEmitter {
     } else if (this.options.proxies > 0) {
       this.app.set("trust proxy", this.options.proxies);
     }
-    this.app.use(urlencodedParser);
-    this.app.use(jsonParser);
+    if (!this.options.bodyCompatible) {
+      this.app.use(urlencodedParser);
+      this.app.use(jsonParser);
+    }
     if (this.options.ejs) {
       this.app.set("view engine", "ejs");
     }
