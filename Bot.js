@@ -35,6 +35,7 @@ module.exports = class extends EventEmitter {
         }
       });
     }
+    this.currentStatus = void 0;
     this.buttons = new Map();
     this.commands = new Map();
     this.slashCommands = new Map();
@@ -210,6 +211,11 @@ module.exports = class extends EventEmitter {
     r.count = r.length;
     return r;
   }
+  get channels() {
+    var r = Array.from(this.client.channels.cache.values());
+    r.count = r.length;
+    return r;
+  }
   slashCommand(basic, options, executor) {
     if (!basic.name.startsWith("/")) {
       throw new Error("Slash command starts with /.");
@@ -372,5 +378,10 @@ module.exports = class extends EventEmitter {
     } else {
       this.emit("interaction", interaction);
     }
+  }
+  setStatus(data) {
+    this.currentStatus = data;
+    this.client.options.presence = data;
+    return this.client.user.setPresence(data);
   }
 };
