@@ -109,6 +109,9 @@ module.exports = class extends EventEmitter {
               option.setName(opt.name);
               option.setDescription(opt.description);
               option.setRequired(opt.required);
+              if (opt.types) {
+                option.addChannelTypes(...opt.types);
+              }
               cmdo.addChannelOption(option);
               break;
             case "role":
