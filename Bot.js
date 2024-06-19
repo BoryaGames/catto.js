@@ -43,7 +43,7 @@ module.exports = class extends EventEmitter {
       }
       this.client = new Discord.Client(opts);
       if (this.options.sharded) {
-        this.cluster = new ClusterClient(this.client);
+        this.client.cluster = new ClusterClient(this.client);
       }
     }
     this.currentStatus = void 0;
@@ -175,15 +175,10 @@ module.exports = class extends EventEmitter {
         });
       }
       this.emit("running", { Discord });
-    });
-    this.cluster.on("ready", () => {
       if (this.cluster.id == (this.cluster.count - 1)) {
         this.cluster.broadcastEval(client => client.emit("_runningFull"));
         this.emit("runningFullLast", { Discord });
       }
-    });
-    this.client.on("_runningFull", () => {
-      this.emit("runningFull", { Discord });
     });
     this.client.on("interactionCreate", this.handleInteractionCreate.bind(this));
     this.client.on("messageCreate", message => {
@@ -225,6 +220,9 @@ module.exports = class extends EventEmitter {
     this.client.on("guildDelete", guild => {
       this.emit("botDelete", guild);
     });
+  }
+  get cluster() {
+    return this.client.cluster;
   }
   get servers() {
     var r = Array.from(this.client.guilds.cache.values());
