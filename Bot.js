@@ -231,7 +231,7 @@ module.exports = class extends EventEmitter {
     r.count = r.length;
     if (this.options.sharded) {
       return new Promise(async res => {
-        r.count = (await this.client.cluster.broadcastEval("this.guilds.cache.size")).reduce((a, b) => a + b, 0);
+        r.count = (await this.cluster.broadcastEval("this.guilds.cache.size")).reduce((a, b) => a + b, 0);
         res(r);
       });
     }
