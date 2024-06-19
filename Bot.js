@@ -1,6 +1,8 @@
 var nacl = require("tweetnacl");
 var events = require("events");
 var Discord = require("discord.js");
+var { ClusterManager, ClusterClient, getInfo, ReClusterManager } = require("discord-hybrid-sharding");
+var path = require("path");
 var User = require("./User");
 var MessageBuilder = require("./MessageBuilder");
 var Base64 = require("./Base64");
@@ -17,12 +19,13 @@ module.exports = class extends EventEmitter {
       "slashListener": !0,
       "buttonListener": !0,
       "publicKey": "",
-      "debug": !1
+      "debug": !1,
+      "sharded": !1
     }, options || {});
     if (client) {
       this.client = client;
     } else {
-      this.client = new Discord.Client({
+      var opts = {
         "intents": new Discord.IntentsBitField(this.options.intents),
         "partials": [Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.GuildScheduledEvent, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.ThreadMember, Discord.Partials.User],
         "rest": {
@@ -33,7 +36,15 @@ module.exports = class extends EventEmitter {
             "browser": "Discord Android"
           } : {})
         }
-      });
+      };
+      if (this.options.sharded) {
+        opts.shards = getInfo().SHARD_LIST;
+        opts.shardCount = getInfo().TOTAL_SHARDS;
+      }
+      this.client = new Discord.Client(opts);
+      if (this.options.sharded) {
+        this.cluster = new ClusterClient(this.client);
+      }
     }
     this.currentStatus = void 0;
     this.buttons = new Map();
@@ -165,6 +176,15 @@ module.exports = class extends EventEmitter {
       }
       this.emit("running", { Discord });
     });
+    this.cluster.on("ready", () => {
+      if (this.cluster.id == (this.cluster.count - 1)) {
+        this.cluster.broadcastEval(client => client.emit("_runningFull"));
+        this.emit("runningFullLast", { Discord });
+      }
+    });
+    this.client.on("_runningFull", () => {
+      this.emit("runningFull", { Discord });
+    });
     this.client.on("interactionCreate", this.handleInteractionCreate.bind(this));
     this.client.on("messageCreate", message => {
       message.author = new User(message.author, this);
@@ -209,6 +229,12 @@ module.exports = class extends EventEmitter {
   get servers() {
     var r = Array.from(this.client.guilds.cache.values());
     r.count = r.length;
+    if (this.options.sharded) {
+      return new Promise(async res => {
+        r.count = (await this.client.cluster.broadcastEval("this.guilds.cache.size")).reduce((a, b) => a + b, 0);
+        res(r);
+      });
+    }
     return r;
   }
   get channels() {
@@ -383,5 +409,17 @@ module.exports = class extends EventEmitter {
     this.currentStatus = data;
     this.client.options.presence = data;
     return this.client.user.setPresence(data);
+  }
+  static shard(file, token, type, compression) {
+    var manager = new ClusterManager(path.join(__dirname, "..", "..", file), {
+      "shardsPerClusters": compression,
+      "mode": (["worker", "process"][type - 1] || "worker"),
+      token
+    });
+    manager.extend(new ReClusterManager());
+    manager.spawn({
+      "timeout": -1
+    });
+    return manager;
   }
 };
