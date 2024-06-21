@@ -188,7 +188,7 @@ module.exports = class extends EventEmitter {
         });
       }
       this.emit("running", { Discord });
-      if (this.cluster.id == (this.cluster.count - 1)) {
+      if (this.cluster && this.cluster.id == (this.cluster.count - 1)) {
         this.cluster.broadcastEval(client => client.emit("_runningFull"));
         this.emit("runningFullLast", { Discord });
       }
