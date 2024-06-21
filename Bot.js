@@ -151,9 +151,19 @@ module.exports = class extends EventEmitter {
               break;
           }
         }
+        var integration_types = [0];
+        if (cmd.user) {
+          integration_types.push(1);
+        }
+        var contexts = [0];
+        if (cmd.dm) {
+          contexts.push(1);
+        }
+        if (cmd.user) {
+          contexts.push(2);
+        }
         cmds.push(Object.assign(cmdo.toJSON(), {
-          "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
-          "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+          integration_types, contexts
         }));
       }
       for (var cmd of this.userContexts.values()) {
