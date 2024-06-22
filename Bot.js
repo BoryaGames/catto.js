@@ -219,10 +219,10 @@ module.exports = class extends EventEmitter {
       this.emit("message", message);
     });
     this.client.on("messageDelete", message => {
-      if (!(message.author instanceof User)) {
+      if (message.author && !(message.author instanceof User)) {
         message.author = new User(message.author, this);
       }
-      if (message.member && !(message.member.user instanceof User)) {
+      if (message.member && message.member.user && !(message.member.user instanceof User)) {
         message.member.user = new User(message.member.user, this);
       }
       this.emit("messageDeleted", message);
