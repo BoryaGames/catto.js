@@ -156,7 +156,7 @@ class Server extends EventEmitter {
     }
     return this;
   }
-  static renderCJS(filepath, options, callback) {
+  static renderCJS(app, filepath, options, callback) {
     var code = fs.readFileSync(filepath).toString("utf-8");
     var doctype = code.startsWith("<!DOCTYPE html>");
     if (doctype) {
@@ -167,12 +167,17 @@ class Server extends EventEmitter {
     parts.forEach((part, index) => {
       compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)}.replace(/<%s(?:erver)?(?!\\*)= +(.+?) +%>/g, (_, g) => __escape(eval(g))).replace(/<%s(?:erver)?(?!\\*)- +(.+?) +%>/g, (_, g) => eval(g)).replace(/<%s(erver)\\*?# +(.+?) +%>/g, "");\n`);
     });
-    var context = vm.createContext(options);
+    var context = vm.createContext(Object.assign({
+      "include": (filepath, options) => Server.renderCJS(app, path.join(app.get("views"), filepath.endsWith(".cjs") ? filepath : `${filepath}.cjs`), options)
+    }, options));
     vm.runInContext(compile, context);
-    callback(null, context.__output);
+    if (typeof callback === "function") {
+      callback(null, context.__output);
+    }
+    return context.__output;
   }
   static injectCJS(app) {
-    app.engine("cjs", Server.renderCJS).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
+    app.engine("cjs", Server.renderCJS.bind(null, app)).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
       res.sendFile(path.join(__dirname, "cjs_client.js"));
     });
   }
