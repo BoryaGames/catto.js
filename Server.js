@@ -73,7 +73,7 @@ class Server extends EventEmitter {
           "secure": this.options.secureCookie
         },
         "resave": !0,
-        "saveUninitialized": !1
+        "saveUninitialized": !0
       }));
     }
   }
