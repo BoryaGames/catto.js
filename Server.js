@@ -37,7 +37,8 @@ class Server extends EventEmitter {
       "ejs": !1,
       "cjs": !1,
       "proxies": 0,
-      "bodyCompatible": !1
+      "bodyCompatible": !1,
+      "secureCookie": !0
     }, options || {});
     this.app = express();
     if (this.options.ssl) {
@@ -69,8 +70,10 @@ class Server extends EventEmitter {
         "store": new FileStore(this.options.storeOptions),
         "secret": this.options.secret,
         "cookie": {
-          "secure": (this.options.ssl || this.options.sslProxy)
-        }
+          "secure": this.options.secureCookie
+        },
+        "resave": !0,
+        "saveUninitialized": !1
       }));
     }
   }
