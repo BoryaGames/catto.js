@@ -114,8 +114,15 @@ module.exports = class extends EventEmitter {
     return this;
   }
   parseInitData(qs) {
+    if (typeof qs !== "string") {
+      return !1;
+    }
     var dcs = decodeURIComponent(qs).split("&").sort();
-    var hash = dcs.find(a => a.startsWith("hash=")).split("=")[1];
+    var hash = dcs.find(a => a.startsWith("hash="));
+    if (!hash) {
+      return !1;
+    }
+    hash = hash.split("=")[1];
     dcs = dcs.filter(a => !a.startsWith("hash=")).join("\n");
     var secretKey = crypto.createHmac("sha256", "WebAppData").update(this.options.token).digest();
     var checkHash = crypto.createHmac("sha256", secretKey).update(dcs).digest("hex");
