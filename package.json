@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/BoryaGames/catto.js#readme",
   "devDependencies": {
-    "jest": "^29.4.1"
+    "jest": "^29.7.0"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
