@@ -37,7 +37,7 @@
         dstreak = 0;
         compile += dendcode.split("%").join(did);
       }
-      compile += ((index + 1) % 3 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<${symbol.replace("\\", "\\\\")}c(?:lient)?(\\*)?= +(.+?) +${symbol.replace("\\", "\\\\")}>/g, (_, t, g) => __rpf(t, g, eval(g), !0, ignoret)).replace(/<${symbol.replace("\\", "\\\\")}c(?:lient)?(\\*)?- +(.+?) +${symbol.replace("\\", "\\\\")}>/g, (_, t, g) => __rpf(t, g, eval(g), !1, ignoret)).replace(/<${symbol.replace("\\", "\\\\")}c(lient)\\*?# +(.+?) +${symbol.replace("\\", "\\\\")}>/g, "");\n`);
+      compile += ((index + 1) % 3 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<${symbol}c(?:lient)?(\\*)?= +(.+?) +${symbol}>/g, (_, t, g) => __rpf(t, g, eval(g), !0, ignoret)).replace(/<${symbol}c(?:lient)?(\\*)?- +(.+?) +${symbol}>/g, (_, t, g) => __rpf(t, g, eval(g), !1, ignoret)).replace(/<${symbol}c(lient)\\*?# +(.+?) +${symbol}>/g, "");\n`);
       if (dstreak && !parts[index + 2]) {
         dstreak = 0;
         compile += dendcode.split("%").join(did);
