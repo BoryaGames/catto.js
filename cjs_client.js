@@ -5,7 +5,7 @@
 (() => {
   var symbol = "%";
 
-  var incid = -1;
+  var incid = 0;
   var cache = {};
   var ignoret = !1;
   var dstartcode = "output += `<span id=\"_cattojs_d%\">`;\ncfs[%] = function() {\nvar ignoret = !0;\n";
@@ -15,32 +15,40 @@
     var parts = code.split(new RegExp(`<${symbol}c(?:lient)?(\\*)?(?!=) +(.+?) +${symbol}>`, "g"));
     var output = "";
     var compile = "";
-    var dstreak = 0;
     var did = 0;
+    var ob = 0;
     var cfs = {};
     parts.forEach((part, index) => {
       if ((index + 1) % 3 == 2) {
-        if (part == "*") {
-          dstreak++;
-        } else if (dstreak) {
-          dstreak = -1;
-        } else {
-          dstreak = 0;
+        if (!did && part == "*") {
+          compile += dstartcode.split("%").join(++incid);
+          did = incid;
         }
         return;
       }
-      if (dstreak == 1 && (index + 1) % 3 < 1) {
-        compile += dstartcode.split("%").join(++incid);
-        did = incid;
+      if ((index + 1) % 3 < 1) {
+        var instr = !1;
+        var chstr = "";
+        for (var char of part) {
+          if (!instr && "'\"`".includes(char)) {
+            instr = !0;
+            chstr = char;
+          }
+          if (instr && char == chstr) {
+            instr = !1;
+          }
+          if (!instr && char == "{") {
+            ob++;
+          }
+          if (!instr && char == "}") {
+            ob--;
+          }
+        }
       }
-      if (dstreak == -1) {
-        dstreak = 0;
+      compile += ((index + 1) % 3 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<${symbol.replace("\\", "\\\\")}c(?:lient)?(\\*)?= +(.+?) +${symbol.replace("\\", "\\\\")}>/g, (_, t, g) => __rpf(t, g, eval(g), !0, ignoret)).replace(/<${symbol.replace("\\", "\\\\")}c(?:lient)?(\\*)?- +(.+?) +${symbol.replace("\\", "\\\\")}>/g, (_, t, g) => __rpf(t, g, eval(g), !1, ignoret)).replace(/<${symbol.replace("\\", "\\\\")}c(lient)\\*?# +(.+?) +${symbol.replace("\\", "\\\\")}>/g, "");\n`);
+      if (did && !ob) {
         compile += dendcode.split("%").join(did);
-      }
-      compile += ((index + 1) % 3 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<${symbol}c(?:lient)?(\\*)?= +(.+?) +${symbol}>/g, (_, t, g) => __rpf(t, g, eval(g), !0, ignoret)).replace(/<${symbol}c(?:lient)?(\\*)?- +(.+?) +${symbol}>/g, (_, t, g) => __rpf(t, g, eval(g), !1, ignoret)).replace(/<${symbol}c(lient)\\*?# +(.+?) +${symbol}>/g, "");\n`);
-      if (dstreak && !parts[index + 2]) {
-        dstreak = 0;
-        compile += dendcode.split("%").join(did);
+        did = 0;
       }
     });
     function __rpf(t, g, result, r, ignoret) {
