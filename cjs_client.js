@@ -3,17 +3,47 @@
 // catto.js
 
 (() => {
+  var symbol = "%";
+
   var incid = -1;
   var cache = {};
+  var ignoret = !1;
+  var dstartcode = "output += `<span id=\"_cattojs_d%\">`;\ncfs[%] = function() {\nvar ignoret = !0;\n";
+  var dendcode = "};\ncfs[%]();\noutput += `</span>`;\n";
   function render(code) {
-    code = code.split("&lt;").join("<").split("&gt;").join(">");
-    var parts = code.split(/<%c(?:lient)?(?!\*)(?!=) +(.+?) +%>/g);
+    code = code.split("&lt;").join("<").split("&gt;").join(">").split("&amp;").join("&");
+    var parts = code.split(new RegExp(`<${symbol}c(?:lient)?(\\*)?(?!=) +(.+?) +${symbol}>`, "g"));
     var output = "";
     var compile = "";
+    var dstreak = 0;
+    var did = 0;
+    var cfs = {};
     parts.forEach((part, index) => {
-      compile += ((index + 1) % 2 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<%c(?:lient)?(\\*)?= +(.+?) +%>/g, (_, t, g) => __rpf(t, g, eval(g), !0)).replace(/<%c(?:lient)?(\\*)?- +(.+?) +%>/g, (_, t, g) => __rpf(t, g, eval(g), !1)).replace(/<%c(lient)\\*?# +(.+?) +%>/g, "");\n`);
+      if ((index + 1) % 3 == 2) {
+        if (part == "*") {
+          dstreak++;
+        } else if (dstreak) {
+          dstreak = -1;
+        } else {
+          dstreak = 0;
+        }
+        return;
+      }
+      if (dstreak == 1 && (index + 1) % 3 < 1) {
+        compile += dstartcode.split("%").join(++incid);
+        did = incid;
+      }
+      if (dstreak == -1) {
+        dstreak = 0;
+        compile += dendcode.split("%").join(did);
+      }
+      compile += ((index + 1) % 3 < 1 ? `${part}\n` : `output += ${JSON.stringify(part)}.replace(/<${symbol.replace("\\", "\\\\")}c(?:lient)?(\\*)?= +(.+?) +${symbol.replace("\\", "\\\\")}>/g, (_, t, g) => __rpf(t, g, eval(g), !0, ignoret)).replace(/<${symbol.replace("\\", "\\\\")}c(?:lient)?(\\*)?- +(.+?) +${symbol.replace("\\", "\\\\")}>/g, (_, t, g) => __rpf(t, g, eval(g), !1, ignoret)).replace(/<${symbol.replace("\\", "\\\\")}c(lient)\\*?# +(.+?) +${symbol.replace("\\", "\\\\")}>/g, "");\n`);
+      if (dstreak && !parts[index + 2]) {
+        dstreak = 0;
+        compile += dendcode.split("%").join(did);
+      }
     });
-    window.__rpf = (t, g, result, r) => {
+    function __rpf(t, g, result, r, ignoret) {
       if (result === void 0) {
         return "undefined";
       }
@@ -23,30 +53,39 @@
       if (r) {
         result = result.split("<").join("&lt;").split(">").join("&gt;");
       }
-      if (t) {
+      if (!ignoret && t) {
         function update(id, code, format) {
           var result2 = eval(code);
-          if (result2 === void 0) {
-            result2 = "undefined";
-          }
-          if (typeof result2 !== "string") {
-            result2 = result2.toString();
-          }
           if (format) {
             result2 = result2.split("<").join("&lt;").split(">").join("&gt;");
           }
           if (cache[id] != result2) {
             cache[id] = result2;
-            document.querySelector(`#_cattojs_d${id}`).innerHTML = eval(code);
+            try {
+              document.querySelector(`#_cattojs_d${id}`).innerHTML = result2;
+            } catch(e) {
+              throw `Dynamic element #${id} was deleted.`;
+            }
           }
         }
         setInterval(update.bind(null, ++incid, g, r), 1);
         return `<span id="_cattojs_d${incid}">${result}</span>`;
       }
       return result;
-    };
+    }
     eval(compile);
-    delete window.__rpf;
+    function updateb(inf) {
+      output = "";
+      var id = inf[0];
+      inf[1]();
+      if (cache[id] != output) {
+        cache[id] = output;
+        document.querySelector(`#_cattojs_d${id}`).innerHTML = output;
+      }
+    }
+    if (Object.keys(cfs).length) {
+      setInterval(() => Object.entries(cfs).forEach(updateb), 1);
+    }
     return output;
   }
   window.addEventListener("DOMContentLoaded", () => {
