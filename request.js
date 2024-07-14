@@ -1,20 +1,31 @@
+var { default: fetch, Headers, Request, Response } = require("node-fetch");
+
+if (!globalThis.fetch) {
+  globalThis.fetch = fetch;
+  globalThis.Headers = Headers;
+  globalThis.Request = Request;
+  globalThis.Response = Response;
+}
+
 /** @module request */
 
 var request = require("request");
 
 function wrap(method, options) {
+  var options2 = Object.assign({}, options);
+  var url = options2.url;
+  delete options2.url;
   return new Promise((res, rej) => {
-    request[method](options, (error, response, body) => {
-      if (error) {
-        return rej(error);
-      }
-      try {
-        body = JSON.parse(body);
-      } catch(e) {}
-      res({
-        response, body
+    request[method](url, options2).then(response => {
+      response.text().then(body => {
+        try {
+          body = JSON.parse(body);
+        } catch {}
+        res({
+          response, body
+        });
       });
-    });
+    }).catch(rej);
   });
 }
 
