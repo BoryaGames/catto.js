@@ -181,10 +181,20 @@ class Server extends EventEmitter {
     }
     return context.__output;
   }
-  static injectCJS(app) {
+  static injectCJS(app, nows) {
     app.engine("cjs", Server.renderCJS.bind(null, app)).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
       res.sendFile(path.join(__dirname, "cjs_client.js"));
     });
+    if (!nows && !app.ws) {
+      expressWs(app);
+      app._cjs_sdynamic = [];
+      app.ws("/_cattojs/cjs_sdynamic", (ws, req) => {
+        app._cjs_sdynamic.push(ws);
+        ws.on("close", () => {
+          app._cjs_sdynamic = app._cjs_sdynamic.filter(client => client !== ws);
+        });
+      });
+    }
   }
   static fa(text) {
     return (req,res) => {
