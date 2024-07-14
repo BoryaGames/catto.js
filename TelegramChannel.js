@@ -9,11 +9,11 @@ module.exports = class {
     return this.data.id;
   }
   async type() {
-    await this.bot.client.sendChatAction(this.id, "typing");
+    await this.bot.client.telegram.sendChatAction(this.id, "typing");
   }
   async startTyping() {
     if (this.typingLoop === null) {
-      await this.bot.client.sendChatAction(this.id, "typing");
+      await this.type();
       this.typingLoop = setInterval(() => this.type(), 4e3);
     }
   }
@@ -30,7 +30,7 @@ module.exports = class {
     if (data instanceof TelegramMessageBuilder) {
       data = data.data;
     }
-    await this.bot.client.sendMessage(this.id, data.content, {
+    await this.bot.client.telegram.sendMessage(this.id, data.content, {
       "reply_parameters": data.replyParameters ? {
         "message_id": data.replyParameters.message.id,
         "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),

@@ -1,6 +1,6 @@
 var events = require("events");
 var crypto = require("crypto");
-var Telegram = require("node-telegram-bot-api");
+var { Telegraf } = require("telegraf");
 var TelegramMessage = require("./TelegramMessage");
 var TelegramInteraction = require("./TelegramInteraction");
 var TelegramUser = require("./TelegramUser");
@@ -11,19 +11,13 @@ module.exports = class extends EventEmitter {
   constructor(options, client) {
     super();
     this.options = Object.assign({
-      "speed": 300,
       "token": "",
       "debug": !1
     }, options || {});
     if (client) {
       this.client = client;
     } else {
-      this.client = new Telegram(this.options.token, {
-        "polling": {
-          "interval": this.options.speed,
-          "autoStart": !1
-        }
-      });
+      this.client = new Telegraf(this.options.token);
     }
     this.commands = new Map();
     this.slashCommands = new Map();
@@ -84,8 +78,8 @@ module.exports = class extends EventEmitter {
     this.menubtn = { target, label, link };
     return this;
   }
-  async run() {
-    await this.client.startPolling();
+  run() {
+    this.client.launch();
     var commands = [];
     for (var cmd of this.slashCommands.values()) {
       commands.push({
@@ -93,10 +87,10 @@ module.exports = class extends EventEmitter {
         "description": cmd.description
       });
     }
-    this.client.setMyCommands(commands);
+    this.client.telegram.setMyCommands(commands);
     if (this.menubtn.target == "web") {
-      this.client.setChatMenuButton({
-        "menu_button": JSON.stringify({
+      this.client.telegram.setChatMenuButton({
+        "menuButton": JSON.stringify({
           "type": "web_app",
           "text": this.menubtn.label,
           "web_app": {
@@ -105,8 +99,8 @@ module.exports = class extends EventEmitter {
         })
       });
     } else {
-      this.client.setChatMenuButton({
-        "menu_button": JSON.stringify({
+      this.client.telegram.setChatMenuButton({
+        "menuButton": JSON.stringify({
           "type": "commands"
         })
       });
@@ -128,8 +122,8 @@ module.exports = class extends EventEmitter {
     var checkHash = crypto.createHmac("sha256", secretKey).update(dcs).digest("hex");
     return (checkHash === hash ? new TelegramUser(JSON.parse(dcs.split("\n").find(a => a.startsWith("user=")).split("=")[1]), this) : null);
   }
-  async stop() {
-    await this.client.stopPolling();
+  stop() {
+    this.client.bot("SIGINT");
     return this;
   }
 };

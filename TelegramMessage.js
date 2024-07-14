@@ -1,5 +1,6 @@
 var TelegramChannel = require("./TelegramChannel");
 var TelegramUser = require("./TelegramUser");
+var TelegramMessageBuilder = require("./TelegramMessageBuilder");
 module.exports = class {
   constructor(data, bot) {
     this.data = data;
@@ -10,16 +11,22 @@ module.exports = class {
     this.bot.users.set(this.user.id, this.user);
   }
   get id() {
-    return this.data.message_id;
+    return this.data.message.message_id;
   }
   get content() {
-    return this.data.text;
+    return this.data.message.text;
   }
   reply(data) {
     if (typeof data !== "object") {
       data = {
         "content": data
       };
+    }
+    if (data instanceof TelegramMessageBuilder) {
+      data.data.replyParameters = {
+        "message": this
+      };
+      return this.channel.send(data);
     }
     return this.channel.send(Object.assign({
       "replyParameters": {
