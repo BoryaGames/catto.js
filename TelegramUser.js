@@ -24,7 +24,7 @@ module.exports = class {
   }
   get avatars() {
     return new Promise(res => {
-      this.bot.client.getUserProfilePhotos(this.id).then(result => res(result.photos.map(row => row.map(photo => new TelegramFile(photo, this.bot)))));
+      this.bot.client.telegram.getUserProfilePhotos(this.id).then(result => res(result.photos.map(row => row.map(photo => new TelegramFile(photo, this.bot)))));
     });
   }
 };
