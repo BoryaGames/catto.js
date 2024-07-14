@@ -3,7 +3,8 @@
 // catto.js
 
 (() => {
-  var symbol = "%";
+  var symbol = window._CATTOJS_SYMBOL || "%";
+  var updateTime = window._CATTOJS_UPDATE_TIME || 1;
 
   var incid = 0;
   var cache = {};
@@ -82,7 +83,7 @@
             }
           }
         }
-        setInterval(update.bind(null, ++incid, g, r), 1);
+        setInterval(update.bind(null, ++incid, g, r), updateTime);
         return `<span id="_cattojs_d${incid}">${result}</span>`;
       }
       return result;
@@ -98,7 +99,7 @@
       }
     }
     if (Object.keys(cfs).length) {
-      setInterval(() => Object.entries(cfs).forEach(updateb), 1);
+      setInterval(() => Object.entries(cfs).forEach(updateb), updateTime);
     }
     return output;
   }
