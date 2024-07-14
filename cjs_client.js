@@ -64,6 +64,12 @@
       if (!ignoret && t) {
         function update(id, code, format) {
           var result2 = eval(code);
+          if (result2 === void 0) {
+            return "undefined";
+          }
+          if (typeof result2 !== "string") {
+            result2 = result2.toString();
+          }
           if (format) {
             result2 = result2.split("<").join("&lt;").split(">").join("&gt;");
           }
