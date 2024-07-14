@@ -1,6 +1,6 @@
 var events = require("events");
 var crypto = require("crypto");
-var { Telegraf } = require("telegraf");
+var Telegraf = null;
 var TelegramMessage = require("./TelegramMessage");
 var TelegramInteraction = require("./TelegramInteraction");
 var TelegramUser = require("./TelegramUser");
@@ -17,6 +17,7 @@ module.exports = class extends EventEmitter {
     if (client) {
       this.client = client;
     } else {
+      Telegraf = require("telegraf").Telegraf;
       this.client = new Telegraf(this.options.token);
     }
     this.commands = new Map();
