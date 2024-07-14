@@ -1,3 +1,5 @@
+/** @module request */
+
 var { default: fetch, Headers, Request, Response } = require("node-fetch");
 
 if (!globalThis.fetch) {
@@ -6,10 +8,6 @@ if (!globalThis.fetch) {
   globalThis.Request = Request;
   globalThis.Response = Response;
 }
-
-/** @module request */
-
-var request = require("request");
 
 function wrap(method, options) {
   var options2 = Object.assign({}, options);
