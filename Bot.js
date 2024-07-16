@@ -1,6 +1,7 @@
 var nacl = require("tweetnacl");
 var events = require("events");
 var Discord = require("discord.js");
+var djsws = require("@discordjs/ws");
 var { ClusterManager, ClusterClient, getInfo, ReClusterManager } = require("discord-hybrid-sharding");
 var path = require("path");
 var User = require("./User");
@@ -26,16 +27,17 @@ module.exports = class extends EventEmitter {
     if (client) {
       this.client = client;
     } else {
+      djsws.DefaultWebSocketManagerOptions.identifyProperties.device = "catto.js";
+      if (this.options.mobile) {
+        djsws.DefaultWebSocketManagerOptions.identifyProperties.browser = "Discord Android";
+      } else {
+        djsws.DefaultWebSocketManagerOptions.identifyProperties.browser = "catto.js";
+      }
       var opts = {
         "intents": new Discord.IntentsBitField(this.options.intents),
         "partials": [Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.GuildScheduledEvent, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.ThreadMember, Discord.Partials.User],
         "rest": {
           "version": this.options.apiv
-        },
-        "ws": {
-          "properties": (this.options.mobile ? {
-            "browser": "Discord Android"
-          } : {})
         }
       };
       if (this.options.sharded) {
