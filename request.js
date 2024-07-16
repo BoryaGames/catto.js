@@ -7,6 +7,9 @@ if (!globalThis.fetch) {
   globalThis.Request = Request;
   globalThis.Response = Response;
 }
+if (globalThis.fetch && typeof fetch === "undefined") {
+  var fetch = globalThis.fetch;
+}
 
 function wrap(method, options) {
   var options2 = Object.assign({}, options);
