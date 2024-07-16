@@ -59,37 +59,44 @@ class MessageBuilder {
     if (!this.data.components) {
       this.data.components = [];
     }
-    if (!this.data.components[0]) {
-      this.data.components[0] = new Discord.ActionRowBuilder();
-    }
-    if (this.data.components[0].components.length < 5) {
-      this.data.components[0].addComponents(btn);
-    } else {
-      if (!this.data.components[1]) {
-        this.data.components[1] = new Discord.ActionRowBuilder();
+    if (basic.row) {
+      if (!this.data.components[(basic.row - 1)]) {
+        this.data.components[(basic.row - 1)] = new Discord.ActionRowBuilder();
       }
-      if (this.data.components[1].components.length < 5) {
-        this.data.components[1].addComponents(btn);
+      this.data.components[(basic.row - 1)].addComponents(btn);
+    } else {
+      if (!this.data.components[0]) {
+        this.data.components[0] = new Discord.ActionRowBuilder();
+      }
+      if (this.data.components[0].components.length < 5) {
+        this.data.components[0].addComponents(btn);
       } else {
-        if (!this.data.components[2]) {
-          this.data.components[2] = new Discord.ActionRowBuilder();
+        if (!this.data.components[1]) {
+          this.data.components[1] = new Discord.ActionRowBuilder();
         }
-        if (this.data.components[2].components.length < 5) {
-          this.data.components[2].addComponents(btn);
+        if (this.data.components[1].components.length < 5) {
+          this.data.components[1].addComponents(btn);
         } else {
-          if (!this.data.components[3]) {
-            this.data.components[3] = new Discord.ActionRowBuilder();
+          if (!this.data.components[2]) {
+            this.data.components[2] = new Discord.ActionRowBuilder();
           }
-          if (this.data.components[3].components.length < 5) {
-            this.data.components[3].addComponents(btn);
+          if (this.data.components[2].components.length < 5) {
+            this.data.components[2].addComponents(btn);
           } else {
-            if (!this.data.components[4]) {
-              this.data.components[4] = new Discord.ActionRowBuilder();
+            if (!this.data.components[3]) {
+              this.data.components[3] = new Discord.ActionRowBuilder();
             }
-            if (this.data.components[4].components.length < 5) {
-              this.data.components[4].addComponents(btn);
+            if (this.data.components[3].components.length < 5) {
+              this.data.components[3].addComponents(btn);
             } else {
-              throw new Error("Can't have more than 25 buttons in a single message.");
+              if (!this.data.components[4]) {
+                this.data.components[4] = new Discord.ActionRowBuilder();
+              }
+              if (this.data.components[4].components.length < 5) {
+                this.data.components[4].addComponents(btn);
+              } else {
+                throw new Error("Can't have more than 25 buttons in a single message.");
+              }
             }
           }
         }
