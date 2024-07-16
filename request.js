@@ -12,8 +12,9 @@ function wrap(method, options) {
   var options2 = Object.assign({}, options);
   var url = options2.url;
   delete options2.url;
+  options2.method = method;
   return new Promise((res, rej) => {
-    request[method](url, options2).then(response => {
+    fetch(url, options2).then(response => {
       response.text().then(body => {
         try {
           body = JSON.parse(body);
