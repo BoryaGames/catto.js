@@ -20,6 +20,7 @@ module.exports = class extends EventEmitter {
       "buttonListener": !0,
       "publicKey": "",
       "debug": !1,
+      "mobile": !1,
       "sharded": !1
     }, options || {});
     if (client) {
