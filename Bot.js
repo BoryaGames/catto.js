@@ -22,7 +22,8 @@ module.exports = class extends EventEmitter {
       "publicKey": "",
       "debug": !1,
       "mobile": !1,
-      "sharded": !1
+      "sharded": !1,
+      "partials": !1
     }, options || {});
     if (client) {
       this.client = client;
@@ -35,11 +36,13 @@ module.exports = class extends EventEmitter {
       }
       var opts = {
         "intents": new Discord.IntentsBitField(this.options.intents),
-        "partials": [Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.GuildScheduledEvent, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.ThreadMember, Discord.Partials.User],
         "rest": {
           "version": this.options.apiv
         }
       };
+      if (this.options.partials) {
+        opts.partials = [Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.GuildScheduledEvent, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.ThreadMember, Discord.Partials.User];
+      }
       if (this.options.sharded) {
         opts.shards = getInfo().SHARD_LIST;
         opts.shardCount = getInfo().TOTAL_SHARDS;
