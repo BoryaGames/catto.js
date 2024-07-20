@@ -62,7 +62,8 @@ module.exports = class extends EventEmitter {
       this.client.on("debug", console.log);
     }
     this.client.on("ready", () => {
-      var cmds = [];
+      var gcmds = [];
+      var scmds = [];
       for (var cmd of this.slashCommands.values()) {
         var cmdo = new Discord.SlashCommandBuilder();
         cmdo.setName(cmd.name).setDescription(cmd.description).setDMPermission(cmd.dm);
@@ -168,29 +169,69 @@ module.exports = class extends EventEmitter {
         if (cmd.user) {
           contexts.push(2);
         }
-        cmds.push(Object.assign(cmdo.toJSON(), {
-          integration_types, contexts
-        }));
+        if (cmd.servers) {
+          cmd.servers.forEach(id => {
+            if (!scmds[id]) {
+              scmds[id] = [];
+            }
+            scmds[id].push(Object.assign(cmdo.toJSON(), {
+              integration_types, contexts
+            }));
+          });
+        } else {
+          gcmds.push(Object.assign(cmdo.toJSON(), {
+            integration_types, contexts
+          }));
+        }
       }
       for (var cmd of this.userContexts.values()) {
         var cmdo = new Discord.ContextMenuCommandBuilder();
         cmdo.setType(2).setName(cmd.name).setDMPermission(cmd.dm);
-        cmds.push(Object.assign(cmdo.toJSON(), {
-          "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
-          "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
-        }));
+        if (cmd.servers) {
+          cmd.servers.forEach(id => {
+            if (!scmds[id]) {
+              scmds[id] = [];
+            }
+            scmds[id].push(Object.assign(cmdo.toJSON(), {
+              "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+              "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+            }));
+          });
+        } else {
+          gcmds.push(Object.assign(cmdo.toJSON(), {
+            "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+            "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+          }));
+        }
       }
       for (var cmd of this.messageContexts.values()) {
         var cmdo = new Discord.ContextMenuCommandBuilder();
         cmdo.setType(3).setName(cmd.name).setDMPermission(cmd.dm);
-        cmds.push(Object.assign(cmdo.toJSON(), {
-          "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
-          "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
-        }));
+        if (cmd.servers) {
+          cmd.servers.forEach(id => {
+            if (!scmds[id]) {
+              scmds[id] = [];
+            }
+            scmds[id].push(Object.assign(cmdo.toJSON(), {
+              "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+              "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+            }));
+          });
+        } else {
+          gcmds.push(Object.assign(cmdo.toJSON(), {
+            "integration_types": [0, 1].slice(0, (cmd.user ? 2 : 1)),
+            "contexts": [0, 1, 2].slice(0, (cmd.user ? 3 : 2)),
+          }));
+        }
       }
       if (this.options.slashListener) {
         this.client.rest.put(`/applications/${this.client.application.id}/commands`, {
-          "body": cmds
+          "body": gcmds
+        });
+        Object.keys(scmds).forEach(id => {
+          this.client.rest.put(`/applications/${this.client.application.id}/guilds/${id}/commands`, {
+            "body": scmds[id]
+          });
         });
       }
       this.emit("running", { Discord });
