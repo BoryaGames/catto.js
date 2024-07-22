@@ -12,6 +12,11 @@ if (globalThis.fetch && typeof fetch === "undefined") {
 }
 
 function wrap(method, options) {
+  if (typeof options === "string") {
+    options = {
+      "url": options
+    };
+  }
   var options2 = Object.assign({}, options);
   var url = options2.url;
   delete options2.url;
