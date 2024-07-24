@@ -56,7 +56,7 @@ module.exports = class {
     } catch(e) {
       return !1;
     }
-    if (result.response.statusCode == 200) {
+    if (result.response.status == 200) {
       this.writeToken(result.body);
       return !0;
     } else {
@@ -83,7 +83,7 @@ module.exports = class {
     } catch(e) {
       return !1;
     }
-    if (result.response.statusCode == 200) {
+    if (result.response.status == 200) {
       this.writeToken(result.body);
       return !0;
     } else {
@@ -109,7 +109,7 @@ module.exports = class {
     } catch(e) {
       return !1;
     }
-    if (result.response.statusCode == 200) {
+    if (result.response.status == 200) {
       this.options.accessToken = "";
       this.options.refreshToken = "";
       return !0;
@@ -131,7 +131,7 @@ module.exports = class {
     } catch(e) {
       return !1;
     }
-    if (result.response.statusCode == 200) {
+    if (result.response.status == 200) {
       this.user = new User(result.body);
       return !0;
     } else {
