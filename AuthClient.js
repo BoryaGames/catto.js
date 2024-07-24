@@ -42,13 +42,16 @@ module.exports = class {
     try {
       var result = await request.post({
         "url": "https://discord.com/api/oauth2/token",
-        "form": {
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": new URLSearchParams({
           "client_id": this.options.id,
           "client_secret": this.options.secret,
           "grant_type": "authorization_code",
           "code": req.query.code,
           "redirect_uri": this.redirectUri
-        }
+        })
       });
     } catch(e) {
       return !1;
@@ -67,12 +70,15 @@ module.exports = class {
     try {
       var result = await request.post({
         "url": "https://discord.com/api/oauth2/token",
-        "form": {
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": new URLSearchParams({
           "client_id": this.options.id,
           "client_secret": this.options.secret,
           "grant_type": "refresh_token",
           "refreshToken": this.options.refreshToken
-        }
+        })
       });
     } catch(e) {
       return !1;
@@ -91,11 +97,14 @@ module.exports = class {
     try {
       var result = await request.post({
         "url": "https://discord.com/api/oauth2/token/revoke",
-        "form": {
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": new URLSearchParams({
           "client_id": this.options.id,
           "client_secret": this.options.secret,
           "token": this.options.accessToken
-        }
+        })
       });
     } catch(e) {
       return !1;
