@@ -241,10 +241,7 @@ module.exports = class {
   async requestApplication() {
     if (this.isBot) {
       this.application = new Application((await request.get({
-        "url": `https://discord.com/api/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`,
-        "headers": {
-          "Authorization": `Bot ${this.bot.client.token}`
-        }
+        "url": `https://discord.com/api/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`
       })).body);
     }
   }
