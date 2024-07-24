@@ -1,7 +1,6 @@
 var events = require("events");
 var express = require("express");
 var expressWs = require("express-ws");
-var fs = require("fs");
 var vm = require("vm");
 var http = require("http");
 var https = require("https");
