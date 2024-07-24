@@ -9789,4 +9789,7 @@ window.DiscordSDK = {
   attemptRemap,
   patchUrlMappings
 };
-//# sourceMappingURL=@discord_embedded-app-sdk.js.map
+
+if (typeof __BRYTHON__ !== "undefined") {
+  __BRYTHON__.VFS.activitysdk = [".js", `__BRYTHON__.addToImported("activitysdk", window.DiscordSDK);`];
+}
