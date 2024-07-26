@@ -131,5 +131,12 @@ class MessageBuilder {
       throw new Error("Message can't have more than 10 embeds.");
     }
   }
+  file(d) {
+    if (!this.data.files) {
+      this.data.files = [];
+    }
+    this.data.files.push(d);
+    return this;
+  }
 }
 module.exports = MessageBuilder;
