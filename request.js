@@ -71,6 +71,16 @@ function put(options) {
   return wrap("put", options);
 }
 
+/**
+ * DELETE request.
+ * @param {object} options
+ * @return {promise}
+ */
+function _delete(options) {
+  return wrap("delete", options);
+}
+
 module.exports = {
-  get, post, patch, put
+  get, post, patch, put,
+  "delete": _delete
 };
