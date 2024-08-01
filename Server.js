@@ -120,6 +120,10 @@ class Server extends EventEmitter {
     this.app.param(...args);
     return this;
   }
+  patch(...args) {
+    this.app.patch(...args);
+    return this;
+  }
   path(...args) {
     this.app.path(...args);
     return this;
