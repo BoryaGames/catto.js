@@ -70,14 +70,14 @@ class GitHub {
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
       "headers": {
         "User-Agent": this.options.username,
-        "Authorization": `token ${this.options.token}`
+        "Authorization": `token ${this.options.token}`,
+        "Content-Type": "application/json"
       },
-      "json": !0,
-      "body": {
+      "body": JSON.stringify({
         "content": Base64.encode(value),
         "message": this.options.message,
         "sha": this.shas[file]
-      }
+      })
     })).body.content.sha;
     return !0;
   }
