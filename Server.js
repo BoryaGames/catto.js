@@ -67,7 +67,9 @@ class Server extends EventEmitter {
     }
     if (this.options.secret) {
       this.app.use(session({
-        "store": new FileStore(this.options.storeOptions),
+        "store": new FileStore(Object.assign(this.options.storeOptions, {
+          "logFn": () => {}
+        })),
         "secret": this.options.secret,
         "cookie": {
           "secure": this.options.secureCookie,
