@@ -35,6 +35,7 @@ class Server extends EventEmitter {
       "storeOptions": {},
       "ejs": !1,
       "cjs": !1,
+      "cjsClient": !0,
       "proxies": 0,
       "bodyCompatible": !1,
       "secureCookie": !0,
@@ -63,7 +64,7 @@ class Server extends EventEmitter {
       this.app.set("view engine", "ejs");
     }
     if (this.options.cjs) {
-      Server.injectCJS(this.app);
+      Server.injectCJS(this.app, !1, this.options.cjsClient);
     }
     if (this.options.secret) {
       this.app.use(session({
@@ -166,14 +167,14 @@ class Server extends EventEmitter {
     }
     return this;
   }
-  static renderCJS(app, filepath, options, callback) {
+  static renderCJS(app, wclient, filepath, options, callback) {
     var code = fs.readFileSync(filepath).toString("utf-8");
     var doctype = code.startsWith("<!DOCTYPE html>");
     if (doctype) {
       code = code.replace(/^<!DOCTYPE html>(\r?\n)?/, "");
     }
     var parts = code.split(/<%s(?:erver)?(?!\*)(?!=) +(.+?) +%>/g);
-    var compile = `var __output = "${doctype ? "<!DOCTYPE html>\\n" : ""}<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n";\nfunction __escape(str) {\n  if (str === void 0) {\n    return "undefined";\n  }\n  if (typeof str !== "string") {\n    str = str.toString();\n  }\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
+    var compile = `var __output = "${doctype ? "<!DOCTYPE html>\\n" : ""}${wclient ? `<script src=\\"/_cattojs/cjs_client.js\\"></script>\\n` : ""}";\nfunction __escape(str) {\n  if (str === void 0) {\n    return "undefined";\n  }\n  if (typeof str !== "string") {\n    str = str.toString();\n  }\n  return str.split("<").join("&lt;").split(">").join("&gt;");\n}\n`;
     parts.forEach((part, index) => {
       compile += ((index + 1) % 2 < 1 ? `${part}\n` : `__output += ${JSON.stringify(part)}.replace(/<%s(?:erver)?(?!\\*)= +(.+?) +%>/g, (_, g) => __escape(eval(g))).replace(/<%s(?:erver)?(?!\\*)- +(.+?) +%>/g, (_, g) => eval(g)).replace(/<%s(erver)\\*?# +(.+?) +%>/g, "");\n`);
     });
@@ -186,8 +187,8 @@ class Server extends EventEmitter {
     }
     return context.__output;
   }
-  static injectCJS(app, nows) {
-    app.engine("cjs", Server.renderCJS.bind(null, app)).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
+  static injectCJS(app, nows, wclient) {
+    app.engine("cjs", Server.renderCJS.bind(null, app, wclient)).set("view engine", "cjs").get("/_cattojs/cjs_client.js", (req, res) => {
       res.sendFile(path.join(__dirname, "cjs_client.js"));
     });
     if (!nows && !app.ws) {
