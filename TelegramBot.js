@@ -12,13 +12,16 @@ module.exports = class extends EventEmitter {
     super();
     this.options = Object.assign({
       "token": "",
-      "debug": !1
+      "debug": !1,
+      "test": !1
     }, options || {});
     if (client) {
       this.client = client;
     } else {
       Telegraf = require("telegraf").Telegraf;
-      this.client = new Telegraf(this.options.token);
+      this.client = new Telegraf(this.options.token, {
+        "testEnv": this.options.test
+      });
     }
     this.commands = new Map();
     this.slashCommands = new Map();
