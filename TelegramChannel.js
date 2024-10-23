@@ -30,7 +30,7 @@ module.exports = class {
     if (data instanceof TelegramMessageBuilder) {
       data = data.data;
     }
-    await this.bot.client.telegram.sendMessage(this.id, data.content, {
+    await this.bot.client.telegram.sendMessage(this.id, data.content, Object.assign({
       "reply_parameters": data.replyParameters ? {
         "message_id": data.replyParameters.message.id,
         "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
@@ -39,7 +39,30 @@ module.exports = class {
       "reply_markup": data.replyMarkup ? data.replyMarkup : {
         "remove_keyboard": !0
       }
-    });
+    }, data.extra));
+    if (this.typingLoop !== null) {
+      await this.type();
+    }
+  }
+  async sendPayment(data) {
+    if (typeof data === "string") {
+      data = {
+        "content": data
+      };
+    }
+    if (data instanceof TelegramMessageBuilder) {
+      data = data.data;
+    }
+    await this.bot.client.telegram.sendInvoice(this.id, {
+      "reply_parameters": data.replyParameters ? {
+        "message_id": data.replyParameters.message.id,
+        "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
+        "allow_sending_without_reply": !1
+      } : void 0,
+      "reply_markup": data.replyMarkup ? data.replyMarkup : {
+        "remove_keyboard": !0
+      }
+    }, data.invoiceExtra);
     if (this.typingLoop !== null) {
       await this.type();
     }

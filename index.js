@@ -1,6 +1,6 @@
 var mod = {};
 var version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
-var parts = ["random", "Server", "HTML", "request", "AuthClient", "utils", "GitHub", "Base64", "User", "Bitfield", "Application", "TelegramBot", "TelegramMessage", "TelegramChannel", "TelegramMessageBuilder", "TelegramInteraction", "TelegramUser", "TelegramFile"];
+var parts = ["random", "Server", "HTML", "request", "AuthClient", "utils", "GitHub", "Base64", "User", "Bitfield", "Application", "TelegramBot", "TelegramMessage", "TelegramChannel", "TelegramMessageBuilder", "TelegramInteraction", "TelegramPaymentInProgress", "TelegramPayment", "TelegramUser", "TelegramFile"];
 if (version >= 18.20) {
   parts.push("Bot", "MessageBuilder");
 }

@@ -3,6 +3,8 @@ var crypto = require("crypto");
 var Telegraf = null;
 var TelegramMessage = require("./TelegramMessage");
 var TelegramInteraction = require("./TelegramInteraction");
+var TelegramPaymentInProgress = require("./TelegramPaymentInProgress");
+var TelegramPayment = require("./TelegramPayment");
 var TelegramUser = require("./TelegramUser");
 if (typeof EventEmitter === "undefined") {
   var { EventEmitter } = events;
@@ -38,7 +40,13 @@ module.exports = class extends EventEmitter {
       this.client.on("webhook_error", () => {});
     }
     this.client.on("message", message => {
+      if (message.message.successful_payment) {
+        return this.emit("paymentSuccess", new TelegramPayment(message, this));
+      }
       message = new TelegramMessage(message, this);
+      if (!message.content) {
+        return;
+      }
       var args = message.content.split(" ");
       var cmd = args.shift();
       var command = this.slashCommands.get(cmd) || this.commands.get(cmd);
@@ -58,6 +66,9 @@ module.exports = class extends EventEmitter {
     });
     this.client.on("callback_query", interaction => {
       this.emit("interaction", new TelegramInteraction(interaction, this));
+    });
+    this.client.on("pre_checkout_query", payment => {
+      this.emit("paymentProgress", new TelegramPaymentInProgress(payment, this));
     });
   }
   command(basic, executor) {
