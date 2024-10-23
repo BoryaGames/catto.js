@@ -20,7 +20,9 @@ module.exports = class extends EventEmitter {
     } else {
       Telegraf = require("telegraf").Telegraf;
       this.client = new Telegraf(this.options.token, {
-        "testEnv": this.options.test
+        "telegram": {
+          "testEnv": this.options.test
+        }
       });
     }
     this.commands = new Map();
