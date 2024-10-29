@@ -457,7 +457,7 @@ module.exports = class extends EventEmitter {
           console.log(e);
         }
       } else {
-        interaction.deferReply({}).catch(() => {});
+        interaction.deferUpdate({}).catch(() => {});
       }
     } else {
       this.emit("interaction", interaction);
