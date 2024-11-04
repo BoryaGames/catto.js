@@ -1,7 +1,10 @@
 var request = require("./request");
 var Application = require("./Application");
-module.exports = class {
+class User {
   constructor(options, bot) {
+    if (options instanceof User) {
+      options = options.options;
+    }
     if (options.global_name) {
       options.globalName = options.global_name;
     }
@@ -69,8 +72,10 @@ module.exports = class {
       avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.gif?size=4096`;
     } else if (avataru) {
       avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.webp?size=4096`;
-    } else {
+    } else if (this.discrim) {
       avataru = `https://cdn.discordapp.com/embed/avatars/${(parseInt(this.discrim) % 5).toString()}.png`;
+    } else {
+      avataru = `https://cdn.discordapp.com/embed/avatars/${(parseInt((BigInt(this.id) >> 22n).toString()) % 6).toString()}.png`;
     }
     return avataru;
   }
@@ -245,4 +250,6 @@ module.exports = class {
       })).body);
     }
   }
-};
+}
+
+module.exports = User;
