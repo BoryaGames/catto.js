@@ -61,7 +61,7 @@ module.exports = class extends EventEmitter {
     if (this.options.debug) {
       this.client.on("debug", console.log);
     }
-    this.client.on("ready", () => {
+    this.client.on("ready", async () => {
       var gcmds = [];
       var scmds = [];
       for (var cmd of this.slashCommands.values()) {
@@ -225,6 +225,10 @@ module.exports = class extends EventEmitter {
         }
       }
       if (this.options.slashListener) {
+        var entryPoint = (await this.client.rest.get(`/applications/${this.client.application.id}/commands`)).find(slash => slash.type == 4);
+        if (entryPoint) {
+          gcmds.unshift(entryPoint);
+        }
         this.client.rest.put(`/applications/${this.client.application.id}/commands`, {
           "body": gcmds
         });
