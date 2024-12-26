@@ -30,13 +30,14 @@ class GitHub {
    * Reads data from a file in the Github repository.
    * 
    * @param {string} file - Path to the file to be read.
+   * @param {boolean} [b64mode=false] - Whetever return data encoded in base64 or not.
    * 
    * @returns {(string|object)} - The content of the file. If the file is a JSON file, returns a parsed object, otherwise returns a string.
    * 
    * @async
    * @throws {Error} If there is a problem with the API request.
    */
-  async read(file) {
+  async read(file, b64mode) {
     var value = (await request.get({
       "url": `https://api.github.com/repos/${this.options.username}/${this.options.repository}/contents/${file}`,
       "headers": {
@@ -45,10 +46,12 @@ class GitHub {
       }
     })).body;
     this.shas[file] = value.sha;
-    value = Base64.decode(value.content);
-    try {
-      value = JSON.parse(value);
-    } catch(e) {}
+    if (!b64mode) {
+      value = Base64.decode(value.content);
+      try {
+        value = JSON.parse(value);
+      } catch(e) {}
+    }
     return value;
   }
   /**
