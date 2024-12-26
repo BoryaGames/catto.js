@@ -56,13 +56,14 @@ class GitHub {
    * 
    * @param {string} file - Path to the file to be written.
    * @param {(string|object)} value - The data to be written to the file. If it is an object, it will be stringified as a JSON file.
+   * @param {boolean} [b64mode=false] - Whetever is data to be written is encoded in base64 or not.
    * 
    * @returns {boolean} - Returns true if the write was successful.
    * 
    * @async
    * @throws {Error} If there is a problem with the API request.
    */
-  async write(file, value) {
+  async write(file, value, b64mode) {
     if (typeof value === "object") {
       value = JSON.stringify(value);
     }
@@ -74,7 +75,7 @@ class GitHub {
         "Content-Type": "application/json"
       },
       "body": JSON.stringify({
-        "content": Base64.encode(value),
+        "content": (b64mode ? value : Base64.encode(value)),
         "message": this.options.message,
         "sha": this.shas[file]
       })
