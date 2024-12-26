@@ -46,8 +46,9 @@ class GitHub {
       }
     })).body;
     this.shas[file] = value.sha;
+    value = value.content;
     if (!b64mode) {
-      value = Base64.decode(value.content);
+      value = Base64.decode(value);
       try {
         value = JSON.parse(value);
       } catch(e) {}
