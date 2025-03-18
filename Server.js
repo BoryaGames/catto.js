@@ -30,6 +30,7 @@ class Server extends EventEmitter {
       "cert": null,
       "key": null,
       "serverOptions": {},
+      "websocket": !0,
       "expressWsiOptions": {},
       "secret": null,
       "storeOptions": {},
@@ -50,7 +51,11 @@ class Server extends EventEmitter {
     } else {
       this.server = http.createServer(this.options.serverOptions, this.app);
     }
-    this.expressWsi = expressWs(this.app, this.server, this.options.expressWsiOptions);
+    if (this.options.websocket) {
+      this.expressWsi = expressWs(this.app, this.server, this.options.expressWsiOptions);
+    } else {
+      this.expressWsi = null;
+    }
     if (this.options.proxies == -1) {
       this.app.set("trust proxy", !0);
     } else if (this.options.proxies > 0) {
