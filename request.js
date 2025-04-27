@@ -1,14 +1,27 @@
 /** @module request */
 
-if (!globalThis.fetch) {
-  var { default: fetch, Headers, Request, Response } = require("node-fetch");
-  globalThis.fetch = fetch;
-  globalThis.Headers = Headers;
-  globalThis.Request = Request;
-  globalThis.Response = Response;
-}
-if (globalThis.fetch && typeof fetch === "undefined") {
-  var fetch = globalThis.fetch;
+if (typeof globalThis !== "undefined") {
+  if (!globalThis.fetch) {
+    var { default: fetch, Headers, Request, Response } = require("node-fetch");
+    globalThis.fetch = fetch;
+    globalThis.Headers = Headers;
+    globalThis.Request = Request;
+    globalThis.Response = Response;
+  }
+  if (globalThis.fetch && typeof fetch === "undefined") {
+    var fetch = globalThis.fetch;
+  }
+} else {
+  if (!global.fetch) {
+    var { default: fetch, Headers, Request, Response } = require("node-fetch");
+    global.fetch = fetch;
+    global.Headers = Headers;
+    global.Request = Request;
+    global.Response = Response;
+  }
+  if (global.fetch && typeof fetch === "undefined") {
+    var fetch = global.fetch;
+  }
 }
 
 function wrap(method, options) {
