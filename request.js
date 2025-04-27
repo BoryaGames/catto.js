@@ -39,7 +39,7 @@ function wrap(method, options) {
       response.text().then(body => {
         try {
           body = JSON.parse(body);
-        } catch {}
+        } catch(_) {}
         res({
           response, body
         });
