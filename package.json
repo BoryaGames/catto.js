@@ -43,7 +43,7 @@
     "discord-hybrid-sharding": "^2.2.0",
     "discord.js": "^14.19.3",
     "ejs": "^3.1.10",
-    "express": "^4.19.2",
+    "express": "^5.1.0",
     "express-session": "^1.18.0",
     "express-ws": "^5.0.2",
     "node-fetch": "^2.7.0",
