@@ -1,6 +1,6 @@
 ## catto.js
 #### Everything is easy!
-![Build](https://github.com/BoryaGames/catto.js/actions/workflows/npm-publish.yml/badge.svg)
+![Build](https://github.com/BoryaGames/catto.js/actions/workflows/test.yml/badge.svg)
 ![Contributors](https://img.shields.io/github/contributors/BoryaGames/catto.js)
 ![Chat on Discord](https://img.shields.io/discord/916772281747931198?logo=discord)
 
