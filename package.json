@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/BoryaGames/catto.js#readme",
   "dependencies": {
-    "body-parser": "^1.20.2",
+    "body-parser": "^2.2.0",
     "discord-hybrid-sharding": "^2.2.0",
     "discord.js": "^14.19.3",
     "ejs": "^3.1.10",
