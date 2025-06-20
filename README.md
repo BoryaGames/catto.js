@@ -1,3 +1,5 @@
+котик ты обещал летом прийти в дс, так почему не пришел?
+
 ## catto.js
 #### Everything is easy!
 ![Build](https://github.com/BoryaGames/catto.js/actions/workflows/test.yml/badge.svg)
