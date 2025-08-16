@@ -397,14 +397,14 @@ module.exports = class extends EventEmitter {
         delete options.ephemeral;
         options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
       }
-      return realReply(options);
+      return realReply.apply(this, [options]);
     };
     interaction.deferReply = function(options) {
       if (typeof options === "object" && options.ephemeral) {
         delete options.ephemeral;
         options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
       }
-      return realDeferReply(options);
+      return realDeferReply.apply(this, [options]);
     };
     if (this.options.slashListener && interaction.isChatInputCommand()) {
       var command = this.slashCommands.get(interaction.commandName);
