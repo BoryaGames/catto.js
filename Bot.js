@@ -390,6 +390,22 @@ module.exports = class extends EventEmitter {
     if (interaction.member) {
       interaction.member.user = new User(interaction.member.user, this);
     }
+    var realReply = interaction.reply;
+    var realDeferReply = interaction.deferReply;
+    interaction.reply = function(options) {
+      if (typeof options === "object" && options.ephemeral) {
+        delete options.ephemeral;
+        options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
+      }
+      return realReply(options);
+    };
+    interaction.deferReply = function(options) {
+      if (typeof options === "object" && options.ephemeral) {
+        delete options.ephemeral;
+        options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
+      }
+      return realDeferReply(options);
+    };
     if (this.options.slashListener && interaction.isChatInputCommand()) {
       var command = this.slashCommands.get(interaction.commandName);
       if (command) {
