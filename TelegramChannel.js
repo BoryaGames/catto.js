@@ -30,23 +30,21 @@ module.exports = class {
     if (data instanceof TelegramMessageBuilder) {
       data = data.data;
     }
-    if (data.image) {
-      await this.bot.client.telegram.sendPhoto(this.id, data.image, Object.assign({
-        "caption": data.content,
-        "show_caption_above_media": data.textAbove,
-        "reply_parameters": data.replyParameters ? {
-          "message_id": data.replyParameters.message.id,
-          "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
-          "allow_sending_without_reply": !1
-        } : void 0,
-        "reply_markup": data.replyMarkup ? data.replyMarkup : {
-          "remove_keyboard": !0
+    if (data.media) {
+      await this.bot.client.telegram.sendMediaGroup(this.id, data.media.map((media, index) => {
+        if (index < 1) {
+          return {
+            "type": media.type,
+            "media": media.url,
+            "caption": data.content,
+            "show_caption_above_media": data.textAbove
+          };
         }
-      }, data.extra));
-    } else if (data.video) {
-      await this.bot.client.telegram.sendVideo(this.id, data.video, Object.assign({
-        "caption": data.content,
-        "show_caption_above_media": data.textAbove,
+        return {
+          "type": media.type,
+          "media": media.url
+        };
+      }), Object.assign({
         "reply_parameters": data.replyParameters ? {
           "message_id": data.replyParameters.message.id,
           "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
@@ -97,4 +95,5 @@ module.exports = class {
   }
 
 };
+
 
