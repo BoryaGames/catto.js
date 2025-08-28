@@ -30,7 +30,7 @@ module.exports = class {
     if (data instanceof TelegramMessageBuilder) {
       data = data.data;
     }
-    if (data.media) {
+    if (data.media && data.media.length) {
       await this.bot.client.telegram.sendMediaGroup(this.id, data.media.map((media, index) => {
         if (index < 1) {
           return {
@@ -96,6 +96,7 @@ module.exports = class {
   }
 
 };
+
 
 
 
