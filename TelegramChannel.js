@@ -37,6 +37,7 @@ module.exports = class {
             "type": (media.type == "image") ? "photo" : media.type,
             "media": media.url,
             "caption": data.content,
+            "parse_mode": data.parseMode,
             "show_caption_above_media": data.textAbove
           };
         }
@@ -53,7 +54,8 @@ module.exports = class {
         } : void 0,
         "reply_markup": data.replyMarkup ? data.replyMarkup : {
           "remove_keyboard": !0
-        }
+        },
+        "parse_mode": data.parseMode
       }, data.extra));
     } else {
       await this.bot.client.telegram.sendMessage(this.id, data.content, Object.assign({
@@ -96,6 +98,7 @@ module.exports = class {
   }
 
 };
+
 
 
 
