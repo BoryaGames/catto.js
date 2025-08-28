@@ -42,7 +42,8 @@ module.exports = class {
         }
         return {
           "type": (media.type == "image") ? "photo" : media.type,
-          "media": media.url
+          "media": media.url,
+          "show_caption_above_media": data.textAbove
         };
       }), Object.assign({
         "reply_parameters": data.replyParameters ? {
@@ -95,6 +96,7 @@ module.exports = class {
   }
 
 };
+
 
 
 
