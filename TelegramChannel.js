@@ -34,14 +34,14 @@ module.exports = class {
       await this.bot.client.telegram.sendMediaGroup(this.id, data.media.map((media, index) => {
         if (index < 1) {
           return {
-            "type": media.type,
+            "type": (media.type == "image") ? "photo" : media.type,
             "media": media.url,
             "caption": data.content,
             "show_caption_above_media": data.textAbove
           };
         }
         return {
-          "type": media.type,
+          "type": (media.type == "image") ? "photo" : media.type,
           "media": media.url
         };
       }), Object.assign({
@@ -95,5 +95,6 @@ module.exports = class {
   }
 
 };
+
 
 
