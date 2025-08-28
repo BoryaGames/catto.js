@@ -30,16 +30,31 @@ module.exports = class {
     if (data instanceof TelegramMessageBuilder) {
       data = data.data;
     }
-    await this.bot.client.telegram.sendMessage(this.id, data.content, Object.assign({
-      "reply_parameters": data.replyParameters ? {
-        "message_id": data.replyParameters.message.id,
-        "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
-        "allow_sending_without_reply": !1
-      } : void 0,
-      "reply_markup": data.replyMarkup ? data.replyMarkup : {
-        "remove_keyboard": !0
-      }
-    }, data.extra));
+    if (data.image) {
+      await this.bot.client.telegram.sendPhoto(this.id, data.image, Object.assign({
+        "caption": data.content,
+        "show_caption_above_media": data.textAbove,
+        "reply_parameters": data.replyParameters ? {
+          "message_id": data.replyParameters.message.id,
+          "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
+          "allow_sending_without_reply": !1
+        } : void 0,
+        "reply_markup": data.replyMarkup ? data.replyMarkup : {
+          "remove_keyboard": !0
+        }
+      }, data.extra));
+    } else {
+      await this.bot.client.telegram.sendMessage(this.id, data.content, Object.assign({
+        "reply_parameters": data.replyParameters ? {
+          "message_id": data.replyParameters.message.id,
+          "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
+          "allow_sending_without_reply": !1
+        } : void 0,
+        "reply_markup": data.replyMarkup ? data.replyMarkup : {
+          "remove_keyboard": !0
+        }
+      }, data.extra));
+    }
     if (this.typingLoop !== null) {
       await this.type();
     }
@@ -67,4 +82,5 @@ module.exports = class {
       await this.type();
     }
   }
+
 };
