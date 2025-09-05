@@ -1,6 +1,6 @@
 {
   "name": "catto.js",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Universal module for everything.",
   "main": "index.js",
   "scripts": {
@@ -40,7 +40,7 @@
   "homepage": "https://github.com/BoryaGames/catto.js#readme",
   "dependencies": {
     "body-parser": "^1.20.2",
-    "discord-hybrid-sharding": "^2.2.0",
+    "discord-hybrid-sharding": "^2.2.6",
     "discord.js": "^14.22.1",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
