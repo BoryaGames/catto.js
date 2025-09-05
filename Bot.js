@@ -61,7 +61,7 @@ module.exports = class extends EventEmitter {
     if (this.options.debug) {
       this.client.on("debug", console.log);
     }
-    this.client.on("ready", async () => {
+    this.client.on("clientReady", async () => {
       var gcmds = [];
       var scmds = [];
       for (var cmd of this.slashCommands.values()) {
