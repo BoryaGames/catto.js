@@ -50,6 +50,7 @@ module.exports = class extends EventEmitter {
       this.client = new Discord.Client(opts);
       if (this.options.sharded) {
         this.client.cluster = new ClusterClient(this.client);
+        this.client.removeAllListeners("ready");
       }
     }
     this.currentStatus = void 0;
@@ -62,6 +63,9 @@ module.exports = class extends EventEmitter {
       this.client.on("debug", console.log);
     }
     this.client.on("clientReady", async () => {
+      if (this.options.sharded) {
+        this.client.cluster.triggerReady();
+      }
       var gcmds = [];
       var scmds = [];
       for (var cmd of this.slashCommands.values()) {
