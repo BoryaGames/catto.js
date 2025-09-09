@@ -66,7 +66,8 @@ module.exports = class {
         } : void 0,
         "reply_markup": data.replyMarkup ? data.replyMarkup : {
           "remove_keyboard": !0
-        }
+        },
+        "parse_mode": data.parseMode
       }, data.extra));
     }
     if (this.typingLoop !== null) {
@@ -98,6 +99,7 @@ module.exports = class {
   }
 
 };
+
 
 
 
