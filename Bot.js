@@ -50,7 +50,6 @@ module.exports = class extends EventEmitter {
       this.client = new Discord.Client(opts);
       if (this.options.sharded) {
         this.client.cluster = new ClusterClient(this.client);
-        this.client.removeAllListeners("ready");
       }
     }
     this.currentStatus = void 0;
