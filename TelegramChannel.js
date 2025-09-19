@@ -32,13 +32,7 @@ module.exports = class {
     }
     if (data.media && data.media.length) {
       if (data.media[0].type == "animation") {
-        await this.bot.client.telegram.sendAnimation(this.id, {
-          "type": data.media[0].type,
-          "media": data.media[0].url,
-          "caption": data.content,
-          "parse_mode": data.parseMode,
-          "show_caption_above_media": data.textAbove
-        }, Object.assign({
+        await this.bot.client.telegram.sendAnimation(this.id, data.media[0].url, Object.assign({
           "reply_parameters": data.replyParameters ? {
             "message_id": data.replyParameters.message.id,
             "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
@@ -47,7 +41,9 @@ module.exports = class {
           "reply_markup": data.replyMarkup ? data.replyMarkup : {
             "remove_keyboard": !0
           },
-          "parse_mode": data.parseMode
+          "caption": data.content,
+          "parse_mode": data.parseMode,
+          "show_caption_above_media": data.textAbove
         }, data.extra));
       } else {
         await this.bot.client.telegram.sendMediaGroup(this.id, data.media.map((media, index) => {
@@ -119,6 +115,7 @@ module.exports = class {
   }
 
 };
+
 
 
 
