@@ -31,32 +31,52 @@ module.exports = class {
       data = data.data;
     }
     if (data.media && data.media.length) {
-      await this.bot.client.telegram.sendMediaGroup(this.id, data.media.map((media, index) => {
-        if (index < 1) {
+      if (data.media[0].type == "animation") {
+        await this.bot.client.telegram.sendAnimation(this.id, {
+          "type": data.media[0].type,
+          "media": data.media[0].url,
+          "caption": data.content,
+          "parse_mode": data.parseMode,
+          "show_caption_above_media": data.textAbove
+        }, Object.assign({
+          "reply_parameters": data.replyParameters ? {
+            "message_id": data.replyParameters.message.id,
+            "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
+            "allow_sending_without_reply": !1
+          } : void 0,
+          "reply_markup": data.replyMarkup ? data.replyMarkup : {
+            "remove_keyboard": !0
+          },
+          "parse_mode": data.parseMode
+        }, data.extra));
+      } else {
+        await this.bot.client.telegram.sendMediaGroup(this.id, data.media.map((media, index) => {
+          if (index < 1) {
+            return {
+              "type": (media.type == "image") ? "photo" : media.type,
+              "media": media.url,
+              "caption": data.content,
+              "parse_mode": data.parseMode,
+              "show_caption_above_media": data.textAbove
+            };
+          }
           return {
             "type": (media.type == "image") ? "photo" : media.type,
             "media": media.url,
-            "caption": data.content,
-            "parse_mode": data.parseMode,
             "show_caption_above_media": data.textAbove
           };
-        }
-        return {
-          "type": (media.type == "image") ? "photo" : media.type,
-          "media": media.url,
-          "show_caption_above_media": data.textAbove
-        };
-      }), Object.assign({
-        "reply_parameters": data.replyParameters ? {
-          "message_id": data.replyParameters.message.id,
-          "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
-          "allow_sending_without_reply": !1
-        } : void 0,
-        "reply_markup": data.replyMarkup ? data.replyMarkup : {
-          "remove_keyboard": !0
-        },
-        "parse_mode": data.parseMode
-      }, data.extra));
+        }), Object.assign({
+          "reply_parameters": data.replyParameters ? {
+            "message_id": data.replyParameters.message.id,
+            "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
+            "allow_sending_without_reply": !1
+          } : void 0,
+          "reply_markup": data.replyMarkup ? data.replyMarkup : {
+            "remove_keyboard": !0
+          },
+          "parse_mode": data.parseMode
+        }, data.extra));
+      }
     } else {
       await this.bot.client.telegram.sendMessage(this.id, data.content, Object.assign({
         "reply_parameters": data.replyParameters ? {
@@ -99,6 +119,7 @@ module.exports = class {
   }
 
 };
+
 
 
 
