@@ -5,7 +5,7 @@ module.exports = class {
   constructor(options, client) {
     this.options = Object.assign({
       "config": "config",
-      "profile": "default"
+      "profile": "DEFAULT"
     }, options || {});
     if (client) {
       this.client = client;
