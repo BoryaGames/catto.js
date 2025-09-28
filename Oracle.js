@@ -11,7 +11,7 @@ module.exports = class {
     } else {
       common = require("oci-common");
       this.client = {};
-      this.client.provider = new common.ConfigFileAuthenticationDetailsProvider(this.options.config, this.options.profile);
+      this.client.provider = new common.ConfigFileAuthenticationDetailsProvider(path.join(__dirname, "..", "..", this.options.config), this.options.profile);
       this.client.signer = new common.DefaultRequestSigner(this.client.provider);
     }
   }
