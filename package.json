@@ -30,7 +30,8 @@
     "random",
     "telegram",
     "api",
-    "telegraf"
+    "telegraf",
+    "oracle"
   ],
   "author": "topcatto",
   "license": "ISC",
@@ -47,6 +48,7 @@
     "express-session": "^1.18.0",
     "express-ws": "^5.0.2",
     "node-fetch": "^3.3.2",
+    "oci-common": "^2.118.0",
     "session-file-store": "^1.5.0",
     "telegraf": "^4.16.3",
     "tweetnacl": "^1.0.3"
