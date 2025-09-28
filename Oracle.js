@@ -1,3 +1,4 @@
+var path = require("path");
 var common = null;
 
 module.exports = class {
