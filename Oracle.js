@@ -16,6 +16,12 @@ module.exports = class {
     }
   }
   async fetch(uri, options) {
+    if (!options) {
+      options = {};
+    }
+    if (!options.method) {
+      options.method = "GET";
+    }
     if (!options.headers) {
       options.headers = {};
     }
