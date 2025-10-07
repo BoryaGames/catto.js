@@ -166,9 +166,9 @@ class Server extends EventEmitter {
   }
   static(folder, pathname) {
     if (pathname) {
-      this.app.use(pathname, express.static(path.join(__dirname,"..","..",folder)));
+      this.app.use(pathname, express.static(path.join(__dirname, "..", "..", folder)));
     } else {
-      this.app.use(express.static(path.join(__dirname,"..","..",folder)));
+      this.app.use(express.static(path.join(__dirname, "..", "..", folder)));
     }
     return this;
   }
@@ -215,3 +215,4 @@ class Server extends EventEmitter {
 }
 
 module.exports = Server;
+
