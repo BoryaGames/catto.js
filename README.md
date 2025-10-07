@@ -25,6 +25,7 @@ Catto.JS is a module that is designed to help you with making a Discord/Telegram
 - Easily work with BitFields
 - Improve JavaScript experience by adding methods to existing arrays/strings
 - This module is being maintained and updated frequently to make sure you don't have issues/bugs
+- Stable API, very rare deprecations/breaking changes so you can update the module version without changing your code
 - 🐈 Cats 🐈
 
 ## Installation
@@ -112,4 +113,77 @@ var str = await something.replaceAsync("dog", async () => "cat");
 ```javascript
 // Code will resume execution after bot.loaded will become true value
 await cattojs.utils.waitFor(bot, "loaded");
+```
+
+### Web Server
+
+This class allows you to host a web server, let's start with creating one.
+
+```javascript
+var server = new cattojs.Server();
+```
+
+That's enough to create a web server, but you can add options (but they're all optional).
+
+```javascript
+var server = new cattojs.Server({
+  "domain": "example.com", // your domain
+  "port": 1234, // port, defaults to auto-detect (which works with Pterodactyl too!)
+  "ssl": false, // if you want catto.js to host HTTPS, set this to true
+  "cert": "mycert.pem", // if you set ssl to true, make sure to give a path to the SSL certificate
+  "key": "mykey.pem", // if you set ssl to true, make sure to give a path to the SSL key
+  "sslProxy": true, // or if your SSL is already given by a proxy (like CloudFlare), set this to true
+  "proxies": 1, // amount of proxies between clients and your web server, set this to correctly determine client's ip, or set to -1 for any amount (unsafe), defaults to 0
+  "websocket": true, // enable websocket support, defaults to true
+  "secret": "catsAreAwesome123", // a secret password used to encrypt sessions, make sure to set this if you want to use sessions
+  "secureCookie": true, // if session cookies should be HTTPS-only
+  "cookieAge": 604800, // cookie expiration age in seconds, defaults to 1000 years
+  "bodyCompatible": false, // set this to true if some module like express-http-proxy is reading raw body, this will disable body parsing, defaults to false
+  "ejs": false, // set this to true to use res.render for EJS, defaults to false
+  "cjs": true, // set this to true to use res.render for CJS, defaults to false
+  "cjsClient": true, // set this to true to use CJS in the client too, defaults to true if CJS is enabled
+  "serverOptions": {}, // this option should only be used for something that catto.js doesn't support
+  "expressWsiOptions": {}, // this option should only be used for something that catto.js doesn't support
+  "storeOptions": {} // this option should only be used for something that catto.js doesn't support
+});
+```
+
+Once you made a server, you can add routes just like in [ExpressJS](https://npmjs.com/package/express).
+
+```javascript
+server.get("/cats", (req, res) => {
+  console.log(req.ip); // log user's ip (requires proxies options to be set)
+
+  res.end("Meow!");
+}).post("/meow", (req, res) => {
+  console.log(req.body.message); // read value from body
+  res.header("X-Meow", "accepted"); // custom response header
+  res.status(204); // set status code
+  res.end();
+}).use(() => {
+  // Since this is in the end, it can be used as 404 page
+  res.status(404);
+  res.end("404 page not found!");
+});
+```
+
+And make sure to run the server and optionally listen for `running` event.
+
+```javascript
+server.on("running", () => {
+  console.log("Site is online!");
+}).run();
+```
+
+There's also some extra functions.
+
+```javascript
+// Serve static content from a folder
+server.static("public");
+
+// Serve static content from a folder on a specific path
+server.static("assets", "/assets");
+
+// FA stands for fast answer
+server.get("/ping", cattojs.Server.fa("Pong!"));
 ```
