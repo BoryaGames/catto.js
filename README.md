@@ -58,3 +58,58 @@ yarn add git+https://github.com/BoryaGames/catto.js.git
 # Install latest beta version from GitHub using PNPM
 pnpm add https://github.com/BoryaGames/catto.js.git
 ```
+
+### Getting started
+
+```javascript
+// Get started by importing catto.js
+var cattojs = require("catto.js");
+```
+
+### Random
+
+These functions are for generating random data.
+
+```javascript
+// Get a random floating point number between 1 and 5 inclusive
+var num = cattojs.random.float(1, 5);
+
+// Get a random number between 1 and 5 with starting number included (1, 2, 3, 4)
+var num = cattojs.random.int(1, 5);
+
+// Get a random number between 1 and 5 inclusive (1, 2, 3, 4, 5)
+var num = cattojs.random.range(1, 5);
+
+// Get a random logic value (false, true)
+var num = cattojs.random.bool();
+```
+
+### HTML
+
+These functions are for working with HTML text.
+
+```javascript
+// This is now safe to show in the browser without getting XSS
+var safe = cattojs.HTML.disable("<script>console.log('hacked');</script>");
+```
+
+### Utilities
+
+These functions help you use JavaScript.
+
+```javascript
+var arr = ["a", "b", "c"];
+if (arr.has("b")) { // shortcut for .includes()
+  arr.remove(1); // remove element by index and return element
+}
+```
+
+```javascript
+// You can now use async replaces
+var str = await something.replaceAsync("dog", async () => "cat");
+```
+
+```javascript
+// Code will resume execution after bot.loaded will become true value
+await cattojs.utils.waitFor(bot, "loaded");
+```
