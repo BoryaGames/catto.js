@@ -300,3 +300,47 @@ bot.slashCommand({
   });
 });
 ```
+
+### Sharding
+
+Sharding from 2500+ servers, Discord will require you to use shards, and CattoJS organizes multiple shards into clusters. For that you need to split your bot in two files - launcher and the bot.
+
+```javascript
+// index.js (launcher)
+var cattojs = require("catto.js");
+cattojs.Bot.shard("bot.js", "Mz...", 1, 3); // bot file, token, type (1 - worker, 2 - process, defaults to worker), compression (how many shards can be combined in a single claster, defaults to auto)
+```
+
+And the `bot.js` file is the same as normal one, but make sure to add `"sharded": true` to your bot's options.
+
+### Events
+
+```javascript
+bot.on("running", () => {
+  // Current shard is online
+}).on("runningFullLast", () => {
+  // This event is only emitted on the last cluster once all clusters have loaded, useful if you need to do an action on every shard once bot has fully started
+}).on("stopped", () => {
+  // You stopped the bot using bot.stop()
+});
+```
+
+### Miscellaneous
+
+```javascript
+console.log(bot.servers); // array of all bot's servers (on current shard)
+console.log(bot.servers.count); // amount of all bot's servers (global)
+
+console.log(bot.channels); // array of all bot's channels (on current shard)
+console.log(bot.channels.count); // amount of all bot's channels (on current shard)
+
+console.log(bot.cluster); // get current cluster
+
+// Set bot's status and activity
+bot.setStatus({
+  "status": "idle",
+  "activities": [{
+    "name": "with a cat"
+  }]
+});
+```
