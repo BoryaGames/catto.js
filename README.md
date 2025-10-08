@@ -423,3 +423,26 @@ bot.on("message", async message => {
   console.log(message.author.application.supportsSlash); // does bot support slash commands
 });
 ```
+
+### GitHub
+
+CattoJS can read and write files to GitHub repository, which also can be used to use GitHub as a database.
+
+```javascript
+var gh = new cattojs.GitHub({
+  "token": "123", // GitHub API token, required
+  "username": "BoryaGames", // your username, required
+  "repository": "TestDB", // repository, required
+  "message": "cattojs" // commit message to show when catto.js changes a file
+});
+
+// Read file (JSON parsed automatically if possible)
+var data = await gh.read("database.json");
+
+// Read file in Base64 mode
+var release = await gh.read("release.exe", true);
+
+// Change and write the data back (writing requires to read first!)
+data.value = 4;
+await gh.write("database.json", data);
+```
