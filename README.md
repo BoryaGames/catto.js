@@ -301,6 +301,8 @@ bot.slashCommand({
 });
 ```
 
+If you want to reply to an interaction with an ephemeral message, feel free to use `"ephemeral": true` (it's deprecated in DiscordJS, but not in CattoJS!), no need to use new Discord's flags system.
+
 ### Sharding
 
 Sharding from 2500+ servers, Discord will require you to use shards, and CattoJS organizes multiple shards into clusters. For that you need to split your bot in two files - launcher and the bot.
@@ -320,6 +322,14 @@ bot.on("running", () => {
   // Current shard is online
 }).on("runningFullLast", () => {
   // This event is only emitted on the last cluster once all clusters have loaded, useful if you need to do an action on every shard once bot has fully started
+}).on("message", message => {
+  // Bot saw a new message
+}).on("messageDeleted", message => {
+  // Message got deleted
+}).on("botAdd", server => {
+  // Your bot got added to this server
+}).on("botDeleted", server => {
+  // Your bot got deletd from that server
 }).on("stopped", () => {
   // You stopped the bot using bot.stop()
 });
@@ -342,5 +352,74 @@ bot.setStatus({
   "activities": [{
     "name": "with a cat"
   }]
+});
+```
+
+### Context menus
+
+```javascript
+// User/message context menu, only 3 options exist - name, dm, user (see above for explanations)
+bot.messageContext({
+  "name": "Repeat text"
+}, async ({ interaction }) => {
+  interaction.reply({
+    // Get content from message user clicked on
+    "content": interaction.targetMessage.content
+  });
+});
+```
+
+### Message builder
+
+Message builder allows you to build a message by attaching text/links/embeds/files/buttons step-by-step.
+
+```javascript
+var msg = new cattojs.MessageBuilder(bot); // make sure to specify the bot
+msg.text("Meow! Here's a cool link for you: ").link("Click here", "https://example.com").text("\nOr maybe you want a button?").button({
+  "url": "https://example.com",
+  "text": "Click here"
+}).button({
+  "id": `another_link_${Date.now()}`, // ID must be unique and is required for non-link buttons
+  "color": "lime", // color of the button (blue, gray, lime, red)
+  "emoji": "🔗",
+  "text": "I want another link"
+}, ({ interaction }) => {
+  interaction.reply("https://catutils.pro/");
+}).ephemeral();
+
+// Send built message
+message.reply(msg.data);
+```
+
+### Patches
+
+CattoJS tries to patch all User objects.
+
+```javascript
+bot.on("message", message => {
+  console.log(message.author); // cattojs.User
+});
+```
+
+Here's some features of the `User` class.
+
+```javascript
+bot.on("message", async message => {
+  console.log(message.author.id); // user's ID
+  console.log(message.author.name); // user's username
+  console.log(message.author.decoration); // a link to user's avatar decoration
+  console.log(message.author.avatar); // a link to user's avatar
+  console.log(message.author.banner); // a link to user's banner
+  console.log(message.author.badges); // array of user's badges
+  console.log(message.author.isBot); // is user a bot
+  console.log(message.author.isBotVerified); // is user a verified bot
+  console.log(message.author.isSpammer); // is user a spammer
+
+  // If user is a bot, an application can be requested
+  await message.author.requestApplication();
+  console.log(message.author.application.description); // bot's description (about me)
+  console.log(message.author.application.TOS); // a link to bot's Terms of Service
+  console.log(message.author.application.privacyPolicy); // a link to bot's privacy policy
+  console.log(message.author.application.supportsSlash); // does bot support slash commands
 });
 ```
