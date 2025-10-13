@@ -359,6 +359,9 @@ module.exports = class extends EventEmitter {
     this.client.login(this.options.token);
     return this;
   }
+  runAsync() {
+    return this.client.login(this.options.token);
+  }
   stop() {
     this.client.destroy().then(() => {
       this.emit("stopped");
