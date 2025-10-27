@@ -398,6 +398,7 @@ module.exports = class extends EventEmitter {
     }
     var realReply = interaction.reply;
     var realDeferReply = interaction.deferReply;
+    var realEditReply = interaction.editReply;
     interaction.reply = function(options) {
       if (typeof options === "object" && options.ephemeral) {
         delete options.ephemeral;
@@ -411,6 +412,13 @@ module.exports = class extends EventEmitter {
         options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
       }
       return realDeferReply.apply(this, [options]);
+    };
+    interaction.editReply = function(options) {
+      if (typeof options === "object" && options.ephemeral) {
+        delete options.ephemeral;
+        options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
+      }
+      return realEditReply.apply(this, [options]);
     };
     if (this.options.slashListener && interaction.isChatInputCommand()) {
       var command = this.slashCommands.get(interaction.commandName);
