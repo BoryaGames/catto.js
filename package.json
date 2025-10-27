@@ -42,7 +42,7 @@
   "dependencies": {
     "body-parser": "^1.20.2",
     "discord-hybrid-sharding": "^3.0.0",
-    "discord.js": "^14.22.1",
+    "discord.js": "^14.24.0",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
