@@ -400,23 +400,29 @@ module.exports = class extends EventEmitter {
     var realDeferReply = interaction.deferReply;
     var realEditReply = interaction.editReply;
     interaction.reply = function(options) {
-      if (typeof options === "object" && options.ephemeral) {
+      if (typeof options === "object" && "ephemeral" in options) {
+        if (options.ephemeral) {
+          options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
+        }
         delete options.ephemeral;
-        options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
       }
       return realReply.apply(this, [options]);
     };
     interaction.deferReply = function(options) {
-      if (typeof options === "object" && options.ephemeral) {
+      if (typeof options === "object" && "ephemeral" in options) {
+        if (options.ephemeral) {
+          options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
+        }
         delete options.ephemeral;
-        options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
       }
       return realDeferReply.apply(this, [options]);
     };
     interaction.editReply = function(options) {
-      if (typeof options === "object" && options.ephemeral) {
+      if (typeof options === "object" && "ephemeral" in options) {
+        if (options.ephemeral) {
+          options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
+        }
         delete options.ephemeral;
-        options.flags = (options.flags || 0) | Discord.MessageFlags.Ephemeral;
       }
       return realEditReply.apply(this, [options]);
     };
