@@ -248,13 +248,18 @@ module.exports = class extends EventEmitter {
       if (this.options.auditIndexation) {
         this.auditDatabase = {};
         for (var server of this.servers) {
-          var fetchedLogs = (await server.fetchAuditLogs({
-            "limit": 100,
-            "type": 72
-          })).entries.filter(log => log.targetType == "Message");
-          for (var log of fetchedLogs.values()) {
-            this.auditDatabase[log.id] = log.extra.count;
+          if (!server.members.me.permissions.has(Discord.PermissionsBitField.Flags.VIEW_AUDIT_LOG)) {
+            continue;
           }
+          try {
+            var fetchedLogs = (await server.fetchAuditLogs({
+              "limit": 100,
+              "type": 72
+            })).entries.filter(log => log.targetType == "Message");
+            for (var log of fetchedLogs.values()) {
+              this.auditDatabase[log.id] = log.extra.count;
+            }
+          } catch {}
         }
         if (this.options.auditFile) {
           fs.writeFileSync(this.options.auditFile, JSON.stringify(this.auditDatabase, null, 2));
@@ -301,10 +306,17 @@ module.exports = class extends EventEmitter {
       if (!this.options.messageDeleteExecutor) {
         return this.emit("messageDeleted", message);
       }
-      var fetchedLogs = (await message.guild.fetchAuditLogs({
-        "limit": 100,
-        "type": 72
-      })).entries.filter(log => log.targetType == "Message");
+      if (!message.guild.members.me.permissions.has(Discord.PermissionsBitField.Flags.VIEW_AUDIT_LOG)) {
+        return this.emit("messageDeleted", message);
+      }
+      try {
+        var fetchedLogs = (await message.guild.fetchAuditLogs({
+          "limit": 100,
+          "type": 72
+        })).entries.filter(log => log.targetType == "Message");
+      } catch {
+        return this.emit("messageDeleted", message);
+      }
       var found = !1;
       for (var log of fetchedLogs.values()) {
         if (log.targetId != message.author.id || log.extra.channel.id != message.channel.id) {
