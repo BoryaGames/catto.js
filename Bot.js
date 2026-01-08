@@ -3,6 +3,7 @@ var events = require("events");
 var Discord = require("discord.js");
 var djsws = require("@discordjs/ws");
 var { ClusterManager, ClusterClient, getInfo, ReClusterManager } = require("discord-hybrid-sharding");
+var fs = require("fs");
 var path = require("path");
 var User = require("./User");
 var MessageBuilder = require("./MessageBuilder");
@@ -245,7 +246,8 @@ module.exports = class extends EventEmitter {
         });
       }
       if (this.options.auditIndexation) {
-        for (var server of bot.servers) {
+        this.auditDatabase = {};
+        for (var server of this.servers) {
           var fetchedLogs = (await server.fetchAuditLogs({
             "limit": 100,
             "type": 72
