@@ -25,6 +25,7 @@ module.exports = class extends EventEmitter {
       "mobile": !1,
       "sharded": !1,
       "partials": !1,
+      "detectExecutors": !1,
       "messageDeleteExecutor": !1,
       "auditIndexation": !1,
       "auditFile": null
@@ -346,6 +347,42 @@ module.exports = class extends EventEmitter {
     this.client.on("guildDelete", guild => {
       this.emit("botDelete", guild);
     });
+    function addExecutor(bot, event, event2, prop, type) {
+      bot.client.on(event, async element => {
+        if (!bot.options.detectExecutors) {
+          return bot.emit(event2, element);
+        }
+        if (!element.guild.members.me.permissions.has(Discord.PermissionsBitField.Flags.ViewAuditLog)) {
+          return bot.emit(event2, element);
+        }
+        try {
+          var fetchedLogs = (await element.guild.fetchAuditLogs({
+            "limit": 100,
+            type
+          })).entries;
+        } catch {
+          return bot.emit(event2, element);
+        }
+        for (var log of fetchedLogs.values()) {
+          if (log.targetId == element.id) {
+            element[prop] = new User(log.executor, bot);
+            element[prop + "Id"] = log.executorId;
+            break;
+          }
+        }
+        bot.emit(event2, element);
+      });
+    }
+    addExecutor(this, "channelCreate", "channelCreated", "createdBy", 10);
+    addExecutor(this, "channelDelete", "channelDeleted", "deletedBy", 12);
+    addExecutor(this, "roleCreate", "roleCreated", "createdBy", 30);
+    addExecutor(this, "roleDelete", "roleDeleted", "deletedBy", 32);
+    addExecutor(this, "emojiCreate", "emojiCreated", "createdBy", 60);
+    addExecutor(this, "emojiDelete", "emojiDeleted", "deletedBy", 62);
+    addExecutor(this, "stickerCreate", "stickerCreated", "createdBy", 90);
+    addExecutor(this, "stickerDelete", "stickerDeleted", "deletedBy", 92);
+    addExecutor(this, "threadCreate", "threadCreated", "createdBy", 110);
+    addExecutor(this, "threadDelete", "threadDeleted", "deletedBy", 112);
     this.auditDatabase = {};
     if (this.options.auditFile) {
       if (!fs.existsSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0"))) {
