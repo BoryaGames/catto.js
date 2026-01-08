@@ -248,7 +248,7 @@ module.exports = class extends EventEmitter {
       if (this.options.auditIndexation) {
         this.auditDatabase = {};
         for (var server of this.client.guilds.cache.values()) {
-          if (!server.members.me.permissions.has(Discord.PermissionsBitField.Flags.VIEW_AUDIT_LOG)) {
+          if (!server.members.me.permissions.has(Discord.PermissionsBitField.Flags.ViewAuditLog)) {
             continue;
           }
           try {
@@ -306,7 +306,7 @@ module.exports = class extends EventEmitter {
       if (!this.options.messageDeleteExecutor) {
         return this.emit("messageDeleted", message);
       }
-      if (!message.guild.members.me.permissions.has(Discord.PermissionsBitField.Flags.VIEW_AUDIT_LOG)) {
+      if (!message.guild.members.me.permissions.has(Discord.PermissionsBitField.Flags.ViewAuditLog)) {
         return this.emit("messageDeleted", message);
       }
       try {
