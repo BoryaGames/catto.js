@@ -247,7 +247,7 @@ module.exports = class extends EventEmitter {
       }
       if (this.options.auditIndexation) {
         this.auditDatabase = {};
-        for (var server of this.servers) {
+        for (var server of this.client.guilds.cache.values()) {
           if (!server.members.me.permissions.has(Discord.PermissionsBitField.Flags.VIEW_AUDIT_LOG)) {
             continue;
           }
