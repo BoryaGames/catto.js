@@ -23,7 +23,10 @@ module.exports = class extends EventEmitter {
       "debug": !1,
       "mobile": !1,
       "sharded": !1,
-      "partials": !1
+      "partials": !1,
+      "messageDeleteExecutor": !1,
+      "auditIndexation": !1,
+      "auditFile": null
     }, options || {});
     if (client) {
       this.client = client;
@@ -241,6 +244,20 @@ module.exports = class extends EventEmitter {
           });
         });
       }
+      if (this.options.auditIndexation) {
+        for (var server of bot.servers) {
+          var fetchedLogs = (await server.fetchAuditLogs({
+            "limit": 100,
+            "type": 72
+          })).entries.filter(log => log.targetType == "Message");
+          for (var log of fetchedLogs.values()) {
+            this.auditDatabase[log.id] = log.extra.count;
+          }
+        }
+        if (this.options.auditFile) {
+          fs.writeFileSync(this.options.auditFile, JSON.stringify(this.auditDatabase, null, 2));
+        }
+      }
       this.emit("running", { Discord });
       if (this.cluster && this.cluster.id == (this.cluster.count - 1)) {
         this.cluster.broadcastEval(client => client.emit("_runningFull"));
@@ -272,12 +289,40 @@ module.exports = class extends EventEmitter {
       }
       this.emit("message", message);
     });
-    this.client.on("messageDelete", message => {
+    this.client.on("messageDelete", async message => {
       if (message.author && !(message.author instanceof User)) {
         message.author = new User(message.author, this);
       }
       if (message.member && message.member.user && !(message.member.user instanceof User)) {
         message.member.user = new User(message.member.user, this);
+      }
+      if (!this.options.messageDeleteExecutor) {
+        return this.emit("messageDeleted", message);
+      }
+      var fetchedLogs = (await message.guild.fetchAuditLogs({
+        "limit": 100,
+        "type": 72
+      })).entries.filter(log => log.targetType == "Message");
+      var found = !1;
+      for (var log of fetchedLogs.values()) {
+        if (log.targetId != message.author.id || log.extra.channel.id != message.channel.id) {
+          continue;
+        }
+        if (this.auditDatabase[log.id] !== log.extra.count) {
+          if (!found) {
+            found = true;
+            message.deletedBy = new User(log.executor, this);
+            message.deletedById = log.executorId;
+          }
+          this.auditDatabase[log.id] = log.extra.count;
+        }
+      }
+      if (this.options.auditFile) {
+        fs.writeFileSync(this.options.auditFile, JSON.stringify(this.auditDatabase, null, 2));
+      }
+      if (!found) {
+        log.executor = message.author;
+        log.executorId = message.author.id;
       }
       this.emit("messageDeleted", message);
     });
@@ -287,6 +332,13 @@ module.exports = class extends EventEmitter {
     this.client.on("guildDelete", guild => {
       this.emit("botDelete", guild);
     });
+    this.auditDatabase = {};
+    if (this.options.auditFile) {
+      if (!fs.existsSync(this.options.auditFile)) {
+        fs.writeFileSync(this.options.auditFile, "{}");
+      }
+      this.auditDatabase = JSON.parse(fs.readFileSync(this.options.auditFile).toString("utf-8"));
+    }
   }
   get cluster() {
     return this.client.cluster;
@@ -305,6 +357,12 @@ module.exports = class extends EventEmitter {
   get channels() {
     var r = Array.from(this.client.channels.cache.values());
     r.count = r.length;
+    if (this.options.sharded) {
+      return new Promise(async res => {
+        r.count = (await this.cluster.broadcastEval("this.channels.cache.size")).reduce((a, b) => a + b, 0);
+        res(r);
+      });
+    }
     return r;
   }
   slashCommand(basic, options, executor) {

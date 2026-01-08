@@ -1,6 +1,6 @@
 {
   "name": "catto.js",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Universal module for everything.",
   "main": "index.js",
   "scripts": {
@@ -40,20 +40,20 @@
   },
   "homepage": "https://github.com/BoryaGames/catto.js#readme",
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "discord-hybrid-sharding": "^3.0.0",
-    "discord.js": "^14.24.1",
+    "body-parser": "^1.20.4",
+    "discord-hybrid-sharding": "^3.0.1",
+    "discord.js": "^14.25.1",
     "ejs": "^3.1.10",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
+    "express": "^4.22.1",
+    "express-session": "^1.18.2",
     "express-ws": "^5.0.2",
     "node-fetch": "^3.3.2",
-    "oci-common": "^2.118.0",
+    "oci-common": "^2.122.2",
     "session-file-store": "^1.5.0",
     "telegraf": "^4.16.3",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
-    "jest": "^30.0.5"
+    "jest": "^30.2.0"
   }
 }
