@@ -262,7 +262,7 @@ module.exports = class extends EventEmitter {
           } catch {}
         }
         if (this.options.auditFile) {
-          fs.writeFileSync(this.options.auditFile, JSON.stringify(this.auditDatabase, null, 2));
+          fs.writeFileSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0"), JSON.stringify(this.auditDatabase, null, 2));
         }
       }
       this.emit("running", { Discord });
@@ -332,7 +332,7 @@ module.exports = class extends EventEmitter {
         }
       }
       if (this.options.auditFile) {
-        fs.writeFileSync(this.options.auditFile, JSON.stringify(this.auditDatabase, null, 2));
+        fs.writeFileSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0"), JSON.stringify(this.auditDatabase, null, 2));
       }
       if (!found) {
         message.deletedBy = message.author;
@@ -348,10 +348,10 @@ module.exports = class extends EventEmitter {
     });
     this.auditDatabase = {};
     if (this.options.auditFile) {
-      if (!fs.existsSync(this.options.auditFile)) {
-        fs.writeFileSync(this.options.auditFile, "{}");
+      if (!fs.existsSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0"))) {
+        fs.writeFileSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0"), "{}");
       }
-      this.auditDatabase = JSON.parse(fs.readFileSync(this.options.auditFile).toString("utf-8"));
+      this.auditDatabase = JSON.parse(fs.readFileSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0")).toString("utf-8"));
     }
   }
   get cluster() {
