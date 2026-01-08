@@ -335,8 +335,8 @@ module.exports = class extends EventEmitter {
         fs.writeFileSync(this.options.auditFile, JSON.stringify(this.auditDatabase, null, 2));
       }
       if (!found) {
-        message.executor = message.author;
-        message.executorId = message.author.id;
+        message.deletedBy = message.author;
+        message.deletedById = message.author.id;
       }
       this.emit("messageDeleted", message);
     });
