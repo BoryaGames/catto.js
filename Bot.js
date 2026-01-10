@@ -320,7 +320,7 @@ module.exports = class extends EventEmitter {
       }
       var found = !1;
       for (var log of fetchedLogs.values()) {
-        if (log.targetId != message.author.id || log.extra.channel.id != message.channel.id) {
+        if (!message.author || !message.channel || log.targetId != message.author.id || log.extra.channel.id != message.channel.id) {
           continue;
         }
         if (this.auditDatabase[log.id] !== log.extra.count) {
