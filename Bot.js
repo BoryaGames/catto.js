@@ -383,6 +383,31 @@ module.exports = class extends EventEmitter {
     addExecutor(this, "stickerDelete", "stickerDeleted", "deletedBy", 92);
     addExecutor(this, "threadCreate", "threadCreated", "createdBy", 110);
     addExecutor(this, "threadDelete", "threadDeleted", "deletedBy", 112);
+    this.client.on("guildBanAdd", async ban => {
+      ban.user = new User(ban.user, this);
+      if (!this.options.detectExecutors) {
+        return this.emit("memberBanned", ban);
+      }
+      if (!ban.guild.members.me.permissions.has(Discord.PermissionsBitField.Flags.ViewAuditLog)) {
+        return this.emit("memberBanned", ban);
+      }
+      try {
+        var fetchedLogs = (await ban.guild.fetchAuditLogs({
+          "limit": 100,
+          "type": 22
+        })).entries;
+      } catch {
+        return this.emit("memberBanned", ban);
+      }
+      for (var log of fetchedLogs.values()) {
+        if (log.targetId == ban.user.id) {
+          ban.bannedBy = new User(log.executor, this);
+          ban.bannedById = log.executorId;
+          break;
+        }
+      }
+      this.emit("memberBanned", ban);
+    });
     this.auditDatabase = {};
     if (this.options.auditFile) {
       if (!fs.existsSync(this.options.auditFile.replace("%", this.cluster ? this.cluster.id.toString() : "0"))) {
