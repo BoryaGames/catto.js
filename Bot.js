@@ -20,6 +20,7 @@ module.exports = class extends EventEmitter {
       "api": "https://discord.com/api",
       "cdn": "https://cdn.discordapp.com",
       "apiv": 10,
+      "gatewayv": 10,
       "slashListener": !0,
       "buttonListener": !0,
       "publicKey": "",
@@ -30,7 +31,8 @@ module.exports = class extends EventEmitter {
       "detectExecutors": !1,
       "messageDeleteExecutor": !1,
       "auditIndexation": !1,
-      "auditFile": null
+      "auditFile": null,
+      "readyWithoutApplication": false
     }, options || {});
     if (client) {
       this.client = client;
@@ -47,6 +49,9 @@ module.exports = class extends EventEmitter {
           "api": this.options.api,
           "cdn": this.options.cdn,
           "version": this.options.apiv.toString()
+        },
+        "ws": {
+          "version": this.options.gatewayv.toString()
         }
       };
       if (this.options.partials) {
@@ -57,6 +62,11 @@ module.exports = class extends EventEmitter {
         opts.shardCount = getInfo().TOTAL_SHARDS;
       }
       this.client = new Discord.Client(opts);
+      if (this.options.readyWithoutApplication) {
+        this.client.application = {
+          "_patch": () => {}
+        };
+      }
       if (this.options.sharded) {
         this.client.cluster = new ClusterClient(this.client);
       }
