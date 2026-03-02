@@ -232,14 +232,18 @@ You can create a Discord Bot using the `Bot` class.
 var bot = new cattojs.Bot({
   "token": "Mz...", // your Discord bot token, required
   "intents": 131071, // intents for your bot, bitfield, defaults to 98045 (all non-priveleged intents)
+  "api": "https://discord.com/api", // link to Discord API, can be changed to a self-hosted Discord-like server
+  "cdn": "https://cdn.discordapp.com", // link to Discord CDN, can be changed to a self-hosted Discord-like server
   "apiv": 10, // Discord API version to use, defaults to 10
+  "gatewayv": 10, // Discord Gateway version to use, defaults to 10
   "slashListener": true, // if true, catto.js will overwrite your slash commands with the ones you made using .slashCommand and listen for interactions and respond, set to false if you already made the slash commands yourself, defaults to true
   "buttonListener": true, // if true, catto.js will listen for button interactions and respond, set to false if you handle the buttons yourself
   "publicKey": "123", // your public key, required for web interactions
   "debug": false, // enable debug mode for extra logs
   "mobile": false, // set mobile status
   "sharded": false, // set to true if your bot is using shards
-  "partials": false // set to true to receive partials
+  "partials": false // set to true to receive partials,
+  "readyWithoutApplication": false // if using self-hosted Discord-like server (like Fluxer), you may need this patch if READY event is missing application field
 });
 ```
 
@@ -446,3 +450,4 @@ var release = await gh.read("release.exe", true);
 data.value = 4;
 await gh.write("database.json", data);
 ```
+
