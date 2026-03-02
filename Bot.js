@@ -17,6 +17,8 @@ module.exports = class extends EventEmitter {
     this.options = Object.assign({
       "token": "",
       "intents": 98045,
+      "api": "https://discord.com/api",
+      "cdn": "https://cdn.discordapp.com",
       "apiv": 10,
       "slashListener": !0,
       "buttonListener": !0,
@@ -42,7 +44,9 @@ module.exports = class extends EventEmitter {
       var opts = {
         "intents": new Discord.IntentsBitField(this.options.intents),
         "rest": {
-          "version": this.options.apiv
+          "api": this.options.api,
+          "cdn": this.options.cdn,
+          "version": this.options.apiv.toString()
         }
       };
       if (this.options.partials) {
