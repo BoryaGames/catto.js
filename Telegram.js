@@ -235,7 +235,7 @@ class Channel {
     if (this.typingLoop !== null) {
       await this.type();
     }
-    return result;
+    return new Message(result, this.bot);
   }
   async sendPayment(data) {
     if (typeof data === "string") {
@@ -259,7 +259,7 @@ class Channel {
     if (this.typingLoop !== null) {
       await this.type();
     }
-    return result;
+    return new Message(result, this.bot);
   }
 }
 
@@ -508,4 +508,5 @@ class User {
 
 
 module.exports = { Bot, Channel, File, Interaction, Message, MessageBuilder, Payment, PaymentInProgress, User };
+
 
