@@ -34,14 +34,6 @@ class Bot extends EventEmitter {
     this.slashCommands = new Map;
     this.users = new Map;
     this.menubtn = "commands";
-    if (this.options.debug) {
-      this.client.on("polling_error", console.log);
-      this.client.on("webhook_error", console.log);
-      this.client.on("error", console.log);
-    } else {
-      this.client.on("polling_error", () => {});
-      this.client.on("webhook_error", () => {});
-    }
     this.client.on("message", message => {
       if (message.message.successful_payment) {
         return this.emit("paymentSuccess", new Payment(message, this));
@@ -99,7 +91,11 @@ class Bot extends EventEmitter {
     return this;
   }
   run() {
-    this.client.start();
+    this.client.start().catch(err => {
+      if (this.options.debug) {
+        console.log(err);
+      }
+    });
     var commands = [];
     for (var cmd of this.slashCommands.values()) {
       commands.push({
@@ -506,5 +502,6 @@ class User {
     });
   }
 }
+
 
 module.exports = { Bot, Channel, File, Interaction, Message, MessageBuilder, Payment, PaymentInProgress, User };
