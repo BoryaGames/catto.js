@@ -341,6 +341,53 @@ class Message {
       }
     }, data));
   }
+  async edit(data) {
+    if (typeof data === "string") {
+      data = {
+        "content": data
+      };
+    }
+    if (data instanceof MessageBuilder) {
+      data = data.data;
+    }
+    var result = null;
+    if (data.media && data.media.length) {
+      result = await this.bot.client.api.editMessageMedia(this.channel.id, this.id, data.media.map((media, index) => {
+        if (index < 1) {
+          return {
+            "type": (media.type == "image") ? "photo" : media.type,
+            "media": media.url,
+            "caption": data.content,
+            "parse_mode": data.parseMode,
+            "show_caption_above_media": data.textAbove
+          };
+        }
+        return {
+          "type": (media.type == "image") ? "photo" : media.type,
+          "media": media.url,
+          "show_caption_above_media": data.textAbove
+        };
+      }), Object.assign({
+        "reply_parameters": data.replyParameters ? {
+          "message_id": data.replyParameters.message.id,
+          "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
+          "allow_sending_without_reply": !1
+        } : void 0,
+        "reply_markup": data.replyMarkup ? data.replyMarkup : {
+          "remove_keyboard": !0
+        },
+        "parse_mode": data.parseMode
+      }, data.extra));
+    } else {
+      result = await this.bot.client.api.editMessageText(this.channel.id, this.id, data.content, Object.assign({
+        "parse_mode": data.parseMode
+      }, data.extra));
+    }
+    if (this.typingLoop !== null) {
+      await this.type();
+    }
+    return new Message(result, this.bot);
+  }
 }
 
 class MessageBuilder {
@@ -508,5 +555,6 @@ class User {
 
 
 module.exports = { Bot, Channel, File, Interaction, Message, MessageBuilder, Payment, PaymentInProgress, User };
+
 
 
