@@ -98,7 +98,7 @@ class User {
       "HYPESQUAD_ONLINE_HOUSE_3",
       "PREMIUM_EARLY_SUPPORTER",
       "TEAM_PSEUDO_USER",
-      "INTERNAL_APPLICATION",
+      "IS_HUBSPOT_CONTACT",
       "SYSTEM",
       "HAS_UNREAD_URGENT_MESSAGES",
       "BUG_HUNTER_LEVEL_2",
@@ -110,7 +110,7 @@ class User {
       "SPAMMER",
       "DISABLE_PREMIUM",
       "ACTIVE_DEVELOPER",
-      null,
+      "PROVISIONAL_ACCOUNT",
       null,
       null,
       null,
@@ -130,11 +130,11 @@ class User {
       "USED_MOBILE_CLIENT",
       "DISABLED",
       null,
-      "VERIFIED_EMAIL",
+      "HAS_SESSION_STARTED",
       "QUARANTINED",
       null,
       null,
-      null,
+      "PREMIUM_ELIGIBLE_FOR_UNIQUE_USERNAME",
       null,
       null,
       "COLLABORATOR",
@@ -256,4 +256,5 @@ class User {
 }
 
 module.exports = User;
+
 
