@@ -175,9 +175,10 @@ class Channel {
     if (data instanceof MessageBuilder) {
       data = data.data;
     }
+    var result = null;
     if (data.media && data.media.length) {
       if (data.media[0].type == "animation") {
-        await this.bot.client.api.sendAnimation(this.id, data.media[0].url, Object.assign({
+        result = await this.bot.client.api.sendAnimation(this.id, data.media[0].url, Object.assign({
           "reply_parameters": data.replyParameters ? {
             "message_id": data.replyParameters.message.id,
             "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
@@ -191,7 +192,7 @@ class Channel {
           "show_caption_above_media": data.textAbove
         }, data.extra));
       } else {
-        await this.bot.client.api.sendMediaGroup(this.id, data.media.map((media, index) => {
+        result = await this.bot.client.api.sendMediaGroup(this.id, data.media.map((media, index) => {
           if (index < 1) {
             return {
               "type": (media.type == "image") ? "photo" : media.type,
@@ -219,7 +220,7 @@ class Channel {
         }, data.extra));
       }
     } else {
-      await this.bot.client.api.sendMessage(this.id, data.content, Object.assign({
+      result = await this.bot.client.api.sendMessage(this.id, data.content, Object.assign({
         "reply_parameters": data.replyParameters ? {
           "message_id": data.replyParameters.message.id,
           "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
@@ -234,6 +235,7 @@ class Channel {
     if (this.typingLoop !== null) {
       await this.type();
     }
+    return result;
   }
   async sendPayment(data) {
     if (typeof data === "string") {
@@ -244,7 +246,7 @@ class Channel {
     if (data instanceof MessageBuilder) {
       data = data.data;
     }
-    await this.bot.client.api.sendInvoice(this.id, {
+    var result = await this.bot.client.api.sendInvoice(this.id, {
       "reply_parameters": data.replyParameters ? {
         "message_id": data.replyParameters.message.id,
         "chat_id": (data.replyParameters.channel ? data.replyParameters.channel.id : this.id),
@@ -257,6 +259,7 @@ class Channel {
     if (this.typingLoop !== null) {
       await this.type();
     }
+    return result;
   }
 }
 
@@ -505,3 +508,4 @@ class User {
 
 
 module.exports = { Bot, Channel, File, Interaction, Message, MessageBuilder, Payment, PaymentInProgress, User };
+
