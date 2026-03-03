@@ -38,7 +38,7 @@ class Bot extends EventEmitter {
       if (message.message.successful_payment) {
         return this.emit("paymentSuccess", new Payment(message, this));
       }
-      message = new Message(message, this);
+      message = new Message(message.message, this);
       if (!message.content) {
         return;
       }
@@ -318,10 +318,10 @@ class Message {
     this.bot.users.set(this.user.id, this.user);
   }
   get id() {
-    return this.data.message.message_id;
+    return this.data.message_id;
   }
   get content() {
-    return this.data.message.text;
+    return this.data.text;
   }
   reply(data) {
     if (typeof data !== "object") {
@@ -383,8 +383,8 @@ class Message {
         "parse_mode": data.parseMode
       }, data.extra));
     }
-    if (this.typingLoop !== null) {
-      await this.type();
+    if (this.channel.typingLoop !== null) {
+      await this.channel.type();
     }
     return new Message(result, this.bot);
   }
@@ -555,6 +555,7 @@ class User {
 
 
 module.exports = { Bot, Channel, File, Interaction, Message, MessageBuilder, Payment, PaymentInProgress, User };
+
 
 
 
