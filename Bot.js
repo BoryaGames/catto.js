@@ -455,6 +455,9 @@ module.exports = class extends EventEmitter {
     }
     return r;
   }
+  get user() {
+    return this.client.user ? new User(this.client.user, this) : null;
+  }
   slashCommand(basic, options, executor) {
     if (!basic.name.startsWith("/")) {
       throw new Error("Slash command starts with /.");
