@@ -61,7 +61,7 @@ class User {
     return (this.options.avatarDecorationData ? this.options.avatarDecorationData.asset : null);
   }
   get decoration() {
-    return `https://cdn.discordapp.com/avatar-decoration-presets/${this.decorationHash}.png`;
+    return `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/avatar-decoration-presets/${this.decorationHash}.png`;
   }
   get avatarHash() {
     return this.options.avatar;
@@ -69,13 +69,13 @@ class User {
   get avatar() {
     var avataru = this.avatarHash;
     if (avataru && avataru.startsWith("a_")) {
-      avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.gif?size=4096`;
+      avataru = `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/avatars/${this.id}/${avataru}.gif?size=4096`;
     } else if (avataru) {
-      avataru = `https://cdn.discordapp.com/avatars/${this.id}/${avataru}.webp?size=4096`;
+      avataru = `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/avatars/${this.id}/${avataru}.webp?size=4096`;
     } else if (this.discrim) {
-      avataru = `https://cdn.discordapp.com/embed/avatars/${(parseInt(this.discrim) % 5).toString()}.png`;
+      avataru = `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/embed/avatars/${(parseInt(this.discrim) % 5).toString()}.png`;
     } else {
-      avataru = `https://cdn.discordapp.com/embed/avatars/${(parseInt((BigInt(this.id) >> 22n).toString()) % 6).toString()}.png`;
+      avataru = `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/embed/avatars/${(parseInt((BigInt(this.id) >> 22n).toString()) % 6).toString()}.png`;
     }
     return avataru;
   }
@@ -187,9 +187,9 @@ class User {
   get banner() {
     var banneru = this.bannerHash;
     if (banneru && banneru.startsWith("a_")) {
-      banneru = `https://cdn.discordapp.com/banners/${this.id}/${banneru}.gif?size=4096`;
+      banneru = `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/banners/${this.id}/${banneru}.gif?size=4096`;
     } else if (banneru) {
-      banneru = `https://cdn.discordapp.com/banners/${this.id}/${banneru}.webp?size=4096`;
+      banneru = `${this.bot ? this.bot.options.cdn : "https://cdn.discordapp.com"}/banners/${this.id}/${banneru}.webp?size=4096`;
     } else {
       banneru = this.bannerColor || this.accentColor;
     }
@@ -246,10 +246,14 @@ class User {
   async requestApplication() {
     if (this.isBot) {
       this.application = new Application((await request.get({
-        "url": `https://discord.com/api/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`
+        "url": `${this.bot ? this.bot.options.api : "https://discord.com/api"}/v${(this.bot ? (this.bot.client.rest.version ? this.bot.client.rest.version.toString() : "10") : "10")}/oauth2/applications/${this.id}/rpc`
       })).body);
     }
+  }
+  toString() {
+    return `<@${this.id}>`;
   }
 }
 
 module.exports = User;
+
