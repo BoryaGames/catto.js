@@ -14,7 +14,7 @@ Catto.JS is a module that is designed to help you with making a Discord/Telegram
 - Host a web server just like in [ExpressJS](https://www.npmjs.com/package/express)
 - Easily handle SSL, sessions (just like in [Express-Session](https://www.npmjs.com/package/express-session)) and WebSocket (just like in [Express-WS](https://www.npmjs.com/package/express-ws)) on your web server
 - Make Discord bots/activities just like in [DiscordJS](https://www.npmjs.com/package/discord.js), but easier, more optimized and stable API
-- Make Telegram bots just like [Telegraf](https://www.npmjs.com/package/telegraf), but easier and more Discord-like API
+- Make Telegram bots just like [grammY](https://www.npmjs.com/package/grammy), but easier and more Discord-like API
 - Authorize on your website using Discord account
 - Sanitize HTML to make sure you don't get hacked by an XSS
 - Make Telegram web-apps and handle authorization
@@ -30,9 +30,9 @@ Catto.JS is a module that is designed to help you with making a Discord/Telegram
 
 ## Installation
 
-Catto.JS requires [Node.js](https://nodejs.org) to run. Minimal version of NodeJS depends on your use case - Catto.JS can work on very old versions as long as you disable some features.
+CattoJS requires [Node.js](https://nodejs.org) to run.
 
-CattoJS requires **v9.11.0+** to run, but other features like Discord bots may request you to use a newer version.
+CattoJS itself can work on versions as old as **v4.0.0**, but other features may request you to use a newer version (use exactly **v12.20.0** or **v14.13.1+** for Telegram bots, or **v22.12.0+** for Discord bots).
 
 Install it in your project from [NPM Registry](https://www.npmjs.com/package/catmagick) using a package manager: [NPM](https://www.npmjs.com), [Yarn](https://yarnpkg.com) or [PNPM](https://pnpm.io).
 
@@ -85,15 +85,6 @@ var num = cattojs.random.range(1, 5);
 var num = cattojs.random.bool();
 ```
 
-### HTML
-
-These functions are for working with HTML text.
-
-```javascript
-// This is now safe to show in the browser without getting XSS
-var safe = cattojs.HTML.disable("<script>console.log('hacked');</script>");
-```
-
 ### Utilities
 
 These functions help you use JavaScript.
@@ -108,6 +99,11 @@ if (arr.has("b")) { // shortcut for .includes()
 ```javascript
 // You can now use async replaces
 var str = await something.replaceAsync("dog", async () => "cat");
+```
+
+```javascript
+// This is now safe to show in the browser without getting XSS
+var safe = "<script>console.log('hacked');</script>".disableHTML();
 ```
 
 ```javascript
@@ -229,7 +225,7 @@ console.log(cattojs.Base64.decode(test)); // > meow
 You can create a Discord Bot using the `Bot` class.
 
 ```javascript
-var bot = new cattojs.Bot({
+var bot = new cattojs.Discord.Bot({
   "token": "Mz...", // your Discord bot token, required
   "intents": 131071, // intents for your bot, bitfield, defaults to 98045 (all non-priveleged intents)
   "api": "https://discord.com/api", // link to Discord API, can be changed to a self-hosted Discord-like server
@@ -314,7 +310,7 @@ Sharding from 2500+ servers, Discord will require you to use shards, and CattoJS
 ```javascript
 // index.js (launcher)
 var cattojs = require("catto.js");
-cattojs.Bot.shard("bot.js", "Mz...", 1, 3); // bot file, token, type (1 - worker, 2 - process, defaults to worker), compression (how many shards can be combined in a single claster, defaults to auto)
+cattojs.Discord.Bot.shard("bot.js", "Mz...", 1, 3); // bot file, token, type (1 - worker, 2 - process, defaults to worker), compression (how many shards can be combined in a single claster, defaults to auto)
 ```
 
 And the `bot.js` file is the same as normal one, but make sure to add `"sharded": true` to your bot's options.
@@ -401,7 +397,7 @@ CattoJS tries to patch all User objects.
 
 ```javascript
 bot.on("message", message => {
-  console.log(message.author); // cattojs.User
+  console.log(message.author); // cattojs.Discord.User
 });
 ```
 

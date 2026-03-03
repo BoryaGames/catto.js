@@ -29,6 +29,12 @@ Object.defineProperty(String.prototype, "replaceAsync", {
   },
   "enumerable": false
 });
+Object.defineProperty(String.prototype, "disableHTML", {
+  "value": function() {
+    return this.split("<").join("&lt;").split(">").join("&gt;");
+  },
+  "enumerable": false
+});
 
 var utils = {};
 utils.waitFor = (obj, prop) => {

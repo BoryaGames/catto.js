@@ -1,27 +1,37 @@
 module.exports = class {
-  constructor(value, size, exclude) {
-    this.value = value || 0;
-    this.size = size || 32;
-    this.exclude = exclude || [];
+  constructor(value, names) {
+    this.value = BigInt(value || 0);
+    this.names = (names || []);
+  }
+  resolveName(name) {
+    if (typeof name === "number") {
+      return name;
+    }
+    if (!this.names.includes(name)) {
+      throw "Unknown name.";
+    }
+    return this.names.indexOf(name);
   }
   has(bit) {
-    return (this.value & (1 << bit)) !== 0;
+    return (this.value & (1n << BigInt(this.resolveName(bit)))) !== 0n;
   }
   add(bit) {
-    this.value |= (1 << bit);
+    this.value |= (1n << BigInt(this.resolveName(bit)));
   }
   remove(bit) {
-    this.value &= ~(1 << bit);
+    this.value &= ~(1n << BigInt(this.resolveName(bit)));
   }
   all() {
-    var bits = [];
-    var i = 0;
-    while (i < this.size) {
-      if (!this.exclude.includes(i) && this.has(i)) {
-        bits.push(i);
+    var current = this.value;
+    var index = 0;
+    var result = [];
+    while(current !== 0n) {
+      if ((current & (1n << BigInt(index))) !== 0n) {
+        result.push(this.names[index] || index);
+        current &= ~(1n << BigInt(index));
       }
-      i++;
+      index++;
     }
-    return bits;
+    return result;
   }
 };
